@@ -105,3 +105,30 @@ class ByeDecorator(foo:Foo) : Foo() {
 ```
 
 ### Facade
+为子系统提供一系列接口通过一个类
+接口的定义要在一个higher-level 为了更方便的使用
+
+### Flyweight
+当对象的元素比较小时，在一个进程中我们可能会创建大量对象
+这时我们可以制作一个对象池，共享这些对象，减少内存的占用
+
+例如java 中的 ` string constant pool.`
+
+### Proxy
+as Surrogate
+
+我们什么情况下需要代理
+1. 当我们需要一个对象，但是无法立即获取它。如需要下载的image
+2. 但一个对象很大，我们暂时不需要完全加载他
+
+
+```
+
+class FooProxy() {
+    val smartReference
+    
+    通过smartReference proxy 可以获得真实的Foo
+}
+
+
+```
