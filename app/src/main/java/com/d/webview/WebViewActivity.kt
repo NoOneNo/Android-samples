@@ -40,7 +40,12 @@ class WebViewFragment : Fragment() {
             }
         }
         web_view_container.addView(webview)
-        webview.loadUrl("https://www.account.xiaomi.com")
+        webview.loadUrl("https://account.xiaomi.com/oauth2/authorize" +
+                "?skip_confirm=false" +
+                "&response_type=code" +
+                "&redirect_uri=http%3A%2F%2Fpassport.iqiyi.com%2Fapis%2Fthirdparty%2Fncallback.action%3Ffrom%3D30" +
+                "&state=d6f72a229f0bae6f16a3228f1ef2dce0" +
+                "&client_id=2882303761517310776")
 
         floating_search_view.setOnFocusChangeListener { v, hasFocus ->
             if (!hasFocus) {
