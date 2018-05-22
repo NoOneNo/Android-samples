@@ -1,3 +1,5 @@
+2018-05-20
+
 ## Content providers
 https://developer.android.com/guide/topics/providers/content-providers
 

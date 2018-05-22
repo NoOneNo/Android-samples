@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--<PreferenceCategory-->
-        <!--android:title="setting">-->
-        <!--<CheckBoxPreference-->
-            <!--android:key="checkbox"-->
-            <!--android:title="checkbox"/>-->
+    <PreferenceCategory
+        android:title="setting">
+        <CheckBoxPreference
+            android:key="checkbox"
+            android:title="checkbox"/>
 
-        <!--<EditTextPreference-->
-            <!--android:key="edit_text"-->
-            <!--android:title="edit text"/>-->
-    <!--</PreferenceCategory>-->
+        <EditTextPreference
+            android:key="edit_text"
+            android:title="edit text"/>
+    </PreferenceCategory>
 
     <PreferenceCategory
         android:title="entry">
+
         <Preference
             android:key="web_view"
             android:title="web view"/>
+
+        <Preference
+            android:key="progress"
+            android:title="progress"/>
+
     </PreferenceCategory>
 </PreferenceScreen>
