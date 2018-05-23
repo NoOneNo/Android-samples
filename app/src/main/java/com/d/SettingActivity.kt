@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceFragmentCompat
+import com.d.uidraw.progress.EditTextFragment
 import com.d.uidraw.progress.ProgressFragment
 import com.d.webview.WebViewActivity
 
@@ -28,6 +29,11 @@ class SettingFragment : PreferenceFragmentCompat() {
 
         findPreference("progress").setOnPreferenceClickListener {
             activity!!.supportFragmentManager.beginTransaction().replace(android.R.id.content, ProgressFragment()).addToBackStack(null).commit()
+            return@setOnPreferenceClickListener true
+        }
+
+        findPreference("edit_text").setOnPreferenceClickListener {
+            activity!!.supportFragmentManager.beginTransaction().replace(android.R.id.content, EditTextFragment()).addToBackStack(null).commit()
             return@setOnPreferenceClickListener true
         }
 

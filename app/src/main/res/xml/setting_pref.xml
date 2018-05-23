@@ -7,7 +7,7 @@
             android:title="checkbox"/>
 
         <EditTextPreference
-            android:key="edit_text"
+            android:key="edit_text_pref"
             android:title="edit text"/>
     </PreferenceCategory>
 
@@ -21,6 +21,10 @@
         <Preference
             android:key="progress"
             android:title="progress"/>
+
+        <Preference
+            android:key="edit_text"
+            android:title="edit text view"/>
 
     </PreferenceCategory>
 </PreferenceScreen>

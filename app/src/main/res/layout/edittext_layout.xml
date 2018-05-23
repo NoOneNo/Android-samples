@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              tools:ignore="HardcodedText, LabelFor, TextFields">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -11,9 +13,124 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextAppearance 你好"
+                style="@android:style/TextAppearance"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextAppearance.Holo 你好"
+                style="@android:style/TextAppearance.Holo"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextAppearance.DeviceDefault 你好"
+                style="@android:style/TextAppearance.DeviceDefault"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextAppearance.Material 你好"
+                style="@android:style/TextAppearance.Material"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextAppearance.AppCompat 你好"
+                style="@style/TextAppearance.AppCompat"
+                />
+
+            <!-- Button -->
+
+            <Button
+                android:id="@+id/dialog_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Widget.Button 你好"
+                style="@android:style/Widget.Button"/>
+
+            <Button
+                android:id="@+id/dialog_btn_holo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Widget.Holo.Button 你好"
+                style="@android:style/Widget.Holo.Button"
+                />
+
+            <Button
+                android:id="@+id/dialog_device_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Widget.DeviceDefault.Button 你好"
+                style="@android:style/Widget.DeviceDefault.Button"
+                />
+
+            <Button
+                android:id="@+id/dialog_btn_material"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Widget.Material.Button 你好"
+                style="@android:style/Widget.Material.Button"
+                />
+
+            <Button
+                android:id="@+id/dialog_btn_appcompat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Widget.AppCompat.Button 你好"
+                style="@style/Widget.AppCompat.Button"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Widget.AppCompat.Button.Borderless 你好"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                />
+
+            <!-- EditText -->
+
             <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Widget.EditText 你好"
+                style="@android:style/Widget.EditText"/>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Widget.Holo.EditText 你好"
+                style="@android:style/Widget.Holo.EditText"
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Widget.DeviceDefault.EditText 你好"
+                style="@android:style/Widget.DeviceDefault.EditText"
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Widget.Material.EditText 你好"
+                style="@android:style/Widget.Material.EditText"
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Widget.AppCompat.EditText 你好"
+                style="@style/Widget.AppCompat.EditText"
+                />
 
         </LinearLayout>
     </ScrollView>
