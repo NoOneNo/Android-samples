@@ -36,7 +36,5 @@ class SettingFragment : PreferenceFragmentCompat() {
             activity!!.supportFragmentManager.beginTransaction().replace(android.R.id.content, EditTextFragment()).addToBackStack(null).commit()
             return@setOnPreferenceClickListener true
         }
-
-
     }
 }

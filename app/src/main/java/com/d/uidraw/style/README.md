@@ -37,3 +37,51 @@ Action Bar
 app bar  https://developer.android.com/training/appbar/index.html
 floating action button https://developer.android.com/guide/topics/ui/floating-action-button.html
 Dialog
+
+
+## Vector Drawable
+support Lib 中有许多可以跟主题一同变化的图形图片是通过这种方式实现的.
+但是是private的,所以无法直接使用,但是可以copy出来使用.
+好像有版本限制(5.0 *TODO*),详细介绍 https://android-developers.googleblog.com/2016/02/android-support-library-232.html
+https://developer.android.com/guide/topics/graphics/vector-drawable-resources
+https://developer.android.com/studio/write/vector-asset-studio
+
+
+## appCpmpat 依赖
+```
+
++---com.android.support:support-v4:27.1.1
+|    +--- com.android.support:support-compat:27.1.1 (*)
+|    +--- com.android.support:support-media-compat:27.1.1
+|    +--- com.android.support:support-core-utils:27.1.1 (*)
+|    +--- com.android.support:support-core-ui:27.1.1 (*)
+|    \--- com.android.support:support-fragment:27.1.1 (*)
+
++--- com.android.support:appcompat-v7:27.1.1
+|    +--- com.android.support:support-annotations:27.1.1
+|    +--- com.android.support:support-core-utils:27.1.1
+|    +--- com.android.support:support-fragment:27.1.1
+|    +--- com.android.support:support-vector-drawable:27.1.1
+|    \--- com.android.support:animated-vector-drawable:27.1.1
+
+
+\--- com.android.support:support-compat:27.1.1
+     +--- com.android.support:support-annotations:27.1.1
+     \--- android.arch.lifecycle:runtime:1.1.0
+          +--- android.arch.lifecycle:common:1.1.0
+          \--- android.arch.core:common:1.1.0
+
+```
+
+```
++--- com.android.support:cardview-v7:27.1.1
++--- com.android.support:preference-v7:27.1.1
+
+
++--- com.android.support:design:27.1.1
++--- com.android.support:customtabs:27.1.1
++--- com.android.support:animated-vector-drawable:27.1.1 (*)
++--- com.android.support.constraint:constraint-layout:1.1.0
+```
+
+
