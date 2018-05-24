@@ -28,50 +28,6 @@ class WebViewActivity : AppCompatActivity() {
     }
 }
 
-class WebViewFragment : Fragment() {
-    @SuppressLint("InflateParams")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fg_webview, null)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val webview = object : WebView(context) {
-            override fun shouldOverrideUrlLoading(view: android.webkit.WebView?, url: String?): Boolean {
-                floating_search_view.setSearchText(url)
-                return false
-            }
-        }
-        web_view_container.addView(webview)
-        // https://html5test.com
-        webview.loadUrl("https://account.xiaomi.com/oauth2/authorize" +
-                "?skip_confirm=false" +
-                "&response_type=code" +
-                "&redirect_uri=http%3A%2F%2Fpassport.iqiyi.com%2Fapis%2Fthirdparty%2Fncallback.action%3Ffrom%3D30" +
-                "&state=d6f72a229f0bae6f16a3228f1ef2dce0" +
-                "&client_id=2882303761517310776")
-
-        floating_search_view.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
-                webview.loadUrl(floating_search_view.query)
-            }
-        }
-
-        bottom_navigation.setOnNavigationItemSelectedListener {
-            Toast.makeText(context, it.title.toString(), Toast.LENGTH_SHORT).show()
-
-            when {
-                it.itemId == R.id.load -> webview.loadUrl(floating_search_view.query)
-                it.itemId == R.id.back -> webview.goBack()
-                it.itemId == R.id.forward -> webview.goForward()
-            }
-
-            return@setOnNavigationItemSelectedListener true
-        }
-    }
-}
-
 class WebView2Fragment : Fragment() {
     @SuppressLint("InflateParams")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -85,17 +41,26 @@ class WebView2Fragment : Fragment() {
             override fun onPageStarted(view: android.webkit.WebView?, url: String?, favicon: Bitmap?) {
                 web_url_et.setText(url)
             }
+
+            override fun onProgressChanged(view: android.webkit.WebView?, newProgress: Int) {
+                web_progress.progress = progress
+                if (progress == 100) {
+                    web_progress.visibility = View.GONE
+                } else {
+                    web_progress.visibility = View.VISIBLE
+                }
+            }
         }
 
         web_view_container2.addView(webview)
 
-        // https://html5test.com
-        webview.loadUrl("https://account.xiaomi.com/oauth2/authorize" +
-                "?skip_confirm=false" +
-                "&response_type=code" +
-                "&redirect_uri=http%3A%2F%2Fpassport.iqiyi.com%2Fapis%2Fthirdparty%2Fncallback.action%3Ffrom%3D30" +
-                "&state=d6f72a229f0bae6f16a3228f1ef2dce0" +
-                "&client_id=2882303761517310776")
+        webview.loadUrl("https://html5test.com")
+//        webview.loadUrl("https://account.xiaomi.com/oauth2/authorize" +
+//                "?skip_confirm=false" +
+//                "&response_type=code" +
+//                "&redirect_uri=http%3A%2F%2Fpassport.iqiyi.com%2Fapis%2Fthirdparty%2Fncallback.action%3Ffrom%3D30" +
+//                "&state=d6f72a229f0bae6f16a3228f1ef2dce0" +
+//                "&client_id=2882303761517310776")
 
         web_close.setOnClickListener {
             activity!!.finish()
@@ -140,6 +105,7 @@ open class WebView(context:Context?) : android.webkit.WebView(context) {
         settings.domStorageEnabled = true
         settings.allowUniversalAccessFromFileURLs = true
 
+
         webViewClient = object : WebViewClient() {
             override fun onReceivedError(view: android.webkit.WebView?, request: WebResourceRequest?, error: WebResourceError?) {
                 super.onReceivedError(view, request, error)
@@ -165,7 +131,10 @@ open class WebView(context:Context?) : android.webkit.WebView(context) {
             }
         }
         webChromeClient = object : WebChromeClient() {
-
+            override fun onProgressChanged(view: android.webkit.WebView?, newProgress: Int) {
+                super.onProgressChanged(view, newProgress)
+                this@WebView.onProgressChanged(view, newProgress)
+            }
         }
 
 
@@ -191,5 +160,54 @@ open class WebView(context:Context?) : android.webkit.WebView(context) {
 
     open fun onPageStarted(view: android.webkit.WebView?, url: String?, favicon: Bitmap?) {
 
+    }
+
+    open fun onProgressChanged(view: android.webkit.WebView?, newProgress: Int) {
+
+    }
+}
+
+
+class WebViewFragment : Fragment() {
+    @SuppressLint("InflateParams")
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fg_webview, null)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val webview = object : WebView(context) {
+            override fun shouldOverrideUrlLoading(view: android.webkit.WebView?, url: String?): Boolean {
+                floating_search_view.setSearchText(url)
+                return false
+            }
+        }
+        web_view_container.addView(webview)
+        // https://html5test.com
+        webview.loadUrl("https://account.xiaomi.com/oauth2/authorize" +
+                "?skip_confirm=false" +
+                "&response_type=code" +
+                "&redirect_uri=http%3A%2F%2Fpassport.iqiyi.com%2Fapis%2Fthirdparty%2Fncallback.action%3Ffrom%3D30" +
+                "&state=d6f72a229f0bae6f16a3228f1ef2dce0" +
+                "&client_id=2882303761517310776")
+
+        floating_search_view.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                webview.loadUrl(floating_search_view.query)
+            }
+        }
+
+        bottom_navigation.setOnNavigationItemSelectedListener {
+            Toast.makeText(context, it.title.toString(), Toast.LENGTH_SHORT).show()
+
+            when {
+                it.itemId == R.id.load -> webview.loadUrl(floating_search_view.query)
+                it.itemId == R.id.back -> webview.goBack()
+                it.itemId == R.id.forward -> webview.goForward()
+            }
+
+            return@setOnNavigationItemSelectedListener true
+        }
     }
 }
