@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
+        <!--<android.support.v7.widget.Toolbar-->
+            <!--android:id="@+id/toolbar"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="?attr/actionBarSize"-->
+            <!--android:background="?attr/colorPrimary"-->
+            <!--app:layout_scrollFlags="scroll|enterAlways"-->
+            <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />-->
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll"
+            tools:ignore="LabelFor, TextFields, ContentDescription">
+
+
+            <ImageButton
+                android:id="@+id/web_close"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_close_black_24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageButton
+                android:id="@+id/web_forward"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_arrow_forward_black_24dp"
+                app:layout_constraintEnd_toStartOf="@+id/web_close"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageButton
+                android:id="@+id/web_back"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_arrow_back_black_24dp"
+                app:layout_constraintEnd_toStartOf="@+id/web_forward"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+
+            <EditText
+                android:id="@+id/web_url_et"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@android:color/transparent"
+                android:imeActionLabel="Go"
+                android:paddingEnd="150dp"
+                android:paddingStart="16dp"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="fill_vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <FrameLayout
+            android:id="@+id/content_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

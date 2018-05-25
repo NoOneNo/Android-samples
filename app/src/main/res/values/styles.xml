@@ -11,4 +11,11 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
+
+    <style name="AppTheme.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

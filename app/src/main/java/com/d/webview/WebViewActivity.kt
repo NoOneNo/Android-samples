@@ -13,33 +13,65 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.webkit.*
+import android.widget.FrameLayout
 import android.widget.Toast
 import com.d.R
-import kotlinx.android.synthetic.main.fg_webview.*
+import kotlinx.android.synthetic.main.activity_webview.*
 import kotlinx.android.synthetic.main.web_browser_layout.*
 
 class WebViewActivity : AppCompatActivity() {
 
+    private var mWebView2Fragment : WebView2Fragment? = null
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportActionBar!!.hide()
-        supportFragmentManager.beginTransaction().add(android.R.id.content, WebView2Fragment()).commit()
+        setContentView(R.layout.activity_webview)
+
+        var fragment = supportFragmentManager.findFragmentById(R.id.content_container)
+        if (fragment == null) {
+            fragment = WebView2Fragment()
+            supportFragmentManager.beginTransaction().add(R.id.content_container, fragment).commit()
+        }
+        mWebView2Fragment = fragment as WebView2Fragment
+
+
+        web_close.setOnClickListener {
+            finish()
+        }
+
+        web_back.setOnClickListener{
+            mWebView2Fragment?.back()
+        }
+
+        web_forward.setOnClickListener{
+            mWebView2Fragment?.forword()
+        }
+
+        web_url_et.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                mWebView2Fragment?.loadurl(web_url_et.text.toString())
+            }
+        }
+    }
+
+    fun setUrl(url:String?) {
+        web_url_et.setText(url)
     }
 }
 
 class WebView2Fragment : Fragment() {
+    var mWebView:WebView? = null
+
     @SuppressLint("InflateParams")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.web_browser_layout, null)
-    }
+        val view = inflater.inflate(R.layout.web_browser_layout, null)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        mWebView?.destroy()
 
-        val webview = object : WebView(context) {
+        mWebView = object : WebView(context) {
             override fun onPageStarted(view: android.webkit.WebView?, url: String?, favicon: Bitmap?) {
-                web_url_et.setText(url)
+                this@WebView2Fragment.onPageStarted(url)
             }
 
             override fun onProgressChanged(view: android.webkit.WebView?, newProgress: Int) {
@@ -52,35 +84,57 @@ class WebView2Fragment : Fragment() {
             }
         }
 
-        web_view_container2.addView(webview)
+        view.findViewById<FrameLayout>(R.id.web_view_container2).addView(mWebView)
 
-        webview.loadUrl("https://html5test.com")
-//        webview.loadUrl("https://account.xiaomi.com/oauth2/authorize" +
-//                "?skip_confirm=false" +
-//                "&response_type=code" +
-//                "&redirect_uri=http%3A%2F%2Fpassport.iqiyi.com%2Fapis%2Fthirdparty%2Fncallback.action%3Ffrom%3D30" +
-//                "&state=d6f72a229f0bae6f16a3228f1ef2dce0" +
-//                "&client_id=2882303761517310776")
+        loadurl("html5test.com")
 
-        web_close.setOnClickListener {
-            activity!!.finish()
-        }
+        return view
+    }
 
-        web_url_et.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
-                webview.loadUrl(web_url_et.text.toString())
-            }
-        }
 
-        web_back.setOnClickListener {
-            webview.goBack()
-        }
+    /**
+     * Called when the fragment is visible to the user and actively running. Resumes the WebView.
+     */
+    override fun onPause() {
+        super.onPause()
+        mWebView?.onPause()
+    }
 
-        web_forward.setOnClickListener {
-            webview.goForward()
-        }
+    /**
+     * Called when the fragment is no longer resumed. Pauses the WebView.
+     */
+    override fun onResume() {
+        mWebView?.onResume()
+        super.onResume()
+    }
+
+    /**
+     * Called when the fragment is no longer in use. Destroys the internal state of the WebView.
+     */
+    override fun onDestroy() {
+        mWebView?.destroy()
+        mWebView = null
+        super.onDestroy()
+    }
+
+    fun loadurl(url: String) {
+        mWebView?.loadUrl(url)
+    }
+
+    fun forword() {
+        mWebView?.goForward()
+    }
+
+    fun back() {
+        mWebView?.goBack()
+    }
+
+    fun onPageStarted(url: String?) {
+        (activity as WebViewActivity).setUrl(url)
     }
 }
+
+
 
 @SuppressLint("SetJavaScriptEnabled")
 open class WebView(context:Context?) : android.webkit.WebView(context) {
@@ -164,50 +218,5 @@ open class WebView(context:Context?) : android.webkit.WebView(context) {
 
     open fun onProgressChanged(view: android.webkit.WebView?, newProgress: Int) {
 
-    }
-}
-
-
-class WebViewFragment : Fragment() {
-    @SuppressLint("InflateParams")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fg_webview, null)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val webview = object : WebView(context) {
-            override fun shouldOverrideUrlLoading(view: android.webkit.WebView?, url: String?): Boolean {
-                floating_search_view.setSearchText(url)
-                return false
-            }
-        }
-        web_view_container.addView(webview)
-        // https://html5test.com
-        webview.loadUrl("https://account.xiaomi.com/oauth2/authorize" +
-                "?skip_confirm=false" +
-                "&response_type=code" +
-                "&redirect_uri=http%3A%2F%2Fpassport.iqiyi.com%2Fapis%2Fthirdparty%2Fncallback.action%3Ffrom%3D30" +
-                "&state=d6f72a229f0bae6f16a3228f1ef2dce0" +
-                "&client_id=2882303761517310776")
-
-        floating_search_view.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
-                webview.loadUrl(floating_search_view.query)
-            }
-        }
-
-        bottom_navigation.setOnNavigationItemSelectedListener {
-            Toast.makeText(context, it.title.toString(), Toast.LENGTH_SHORT).show()
-
-            when {
-                it.itemId == R.id.load -> webview.loadUrl(floating_search_view.query)
-                it.itemId == R.id.back -> webview.goBack()
-                it.itemId == R.id.forward -> webview.goForward()
-            }
-
-            return@setOnNavigationItemSelectedListener true
-        }
     }
 }

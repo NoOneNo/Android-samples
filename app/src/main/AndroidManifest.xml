@@ -22,8 +22,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".webview.WebViewActivity">
-        </activity>
+        <activity
+            android:name=".webview.WebViewActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".SettingActivity"/>
 
