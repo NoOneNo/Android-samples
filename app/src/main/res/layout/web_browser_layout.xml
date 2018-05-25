@@ -4,18 +4,30 @@
                 android:layout_height="match_parent"
                 tools:ignore="LabelFor, TextFields, ContentDescription">
 
-    <FrameLayout
-        android:layout_marginTop="52dp"
-        android:id="@+id/web_view_container2"
+    <LinearLayout
+        android:layout_marginTop="50dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <!--<ProgressBar-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_marginTop="50dp"-->
-        <!--android:layout_height="2dp"-->
-        <!--style="@style/Widget.AppCompat.ProgressBar.Horizontal"-->
-        <!--/>-->
+        <ProgressBar
+            android:id="@+id/web_progress"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:visibility="gone"
+            />
+
+        <FrameLayout
+            android:layout_marginTop="52dp"
+            android:id="@+id/web_view_container2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
 
     <EditText
         android:id="@+id/web_url_et"
