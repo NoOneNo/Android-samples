@@ -96,7 +96,7 @@ class WebView2Fragment : Fragment() {
 
         view.findViewById<FrameLayout>(R.id.web_view_container2).addView(mWebView)
 
-        loadurl("http://www.jandan.net")
+        loadurl("http://i.jandan.net/top")
 //        loadurl("https://www.html5test.com")
 
 //                loadUrl("https://account.xiaomi.com/oauth2/authorize" +
@@ -202,11 +202,20 @@ open class WebView(context:Context?) : android.webkit.WebView(context) {
             override fun onPageStarted(view: android.webkit.WebView?, url: String?, favicon: Bitmap?) {
                 this@WebView.onPageStarted(view, url, favicon)
             }
+
+
         }
         webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: android.webkit.WebView?, newProgress: Int) {
                 super.onProgressChanged(view, newProgress)
                 this@WebView.onProgressChanged(view, newProgress)
+            }
+
+            override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
+                Toast.makeText(context, "ConsoleMessage: " + consoleMessage?.message() + " -- From line "
+                        + consoleMessage?.lineNumber() + " of "
+                        + consoleMessage?.sourceId(), Toast.LENGTH_SHORT).show()
+                return super.onConsoleMessage(consoleMessage)
             }
         }
 
