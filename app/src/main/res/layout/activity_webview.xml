@@ -25,7 +25,7 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll"
+            app:layout_scrollFlags="scroll|enterAlways"
             tools:ignore="LabelFor, TextFields, ContentDescription">
 
 
@@ -69,6 +69,7 @@
                 android:layout_height="50dp"
                 android:background="@android:color/transparent"
                 android:imeActionLabel="Go"
+                android:imeOptions="actionGo"
                 android:paddingEnd="150dp"
                 android:paddingStart="16dp"
                 android:selectAllOnFocus="true"

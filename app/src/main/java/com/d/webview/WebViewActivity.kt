@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.webkit.*
 import android.widget.FrameLayout
@@ -48,15 +49,24 @@ class WebViewActivity : AppCompatActivity() {
             mWebView2Fragment?.forword()
         }
 
-        web_url_et.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                mWebView2Fragment?.loadurl(web_url_et.text.toString())
-            }
+        web_url_et.setOnEditorActionListener { v, actionId, event ->
+            mWebView2Fragment?.loadurl(web_url_et.text.toString())
+            return@setOnEditorActionListener true
         }
     }
 
     fun setUrl(url:String?) {
         web_url_et.setText(url)
+        content_container.requestFocus()
+    }
+
+    fun hideKeyBoard() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(window.decorView.rootView.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+
+        window.setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        )
     }
 }
 
@@ -86,7 +96,15 @@ class WebView2Fragment : Fragment() {
 
         view.findViewById<FrameLayout>(R.id.web_view_container2).addView(mWebView)
 
-        loadurl("html5test.com")
+        loadurl("http://www.jandan.net")
+//        loadurl("https://www.html5test.com")
+
+//                loadUrl("https://account.xiaomi.com/oauth2/authorize" +
+//                        "?skip_confirm=false" +
+//                        "&response_type=code" +
+//                        "&redirect_uri=http%3A%2F%2Fpassport.iqiyi.com%2Fapis%2Fthirdparty%2Fncallback.action%3Ffrom%3D30" +
+//                        "&state=d6f72a229f0bae6f16a3228f1ef2dce0" +
+//                        "&client_id=2882303761517310776")
 
         return view
     }
@@ -119,6 +137,7 @@ class WebView2Fragment : Fragment() {
 
     fun loadurl(url: String) {
         mWebView?.loadUrl(url)
+        (activity as WebViewActivity).hideKeyBoard()
     }
 
     fun forword() {
@@ -195,8 +214,7 @@ open class WebView(context:Context?) : android.webkit.WebView(context) {
     }
 
     override fun loadUrl(urlIn: String) {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-        imm!!.hideSoftInputFromWindow(windowToken, 0)
+
 
         var url = urlIn
         if(!url.startsWith("www.")&& !url.startsWith("http://") && !url.startsWith("https://")){
