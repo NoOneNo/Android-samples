@@ -58,6 +58,7 @@ class WebViewActivity : AppCompatActivity() {
     fun setUrl(url:String?) {
         web_url_et.setText(url)
         content_container.requestFocus()
+        content_container.clearFocus()
     }
 
     fun hideKeyBoard() {

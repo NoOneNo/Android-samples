@@ -26,6 +26,19 @@
 + ActionBar 有两种 WindowDecorActionBar 和 ToolbarActionBar 不能同时出现
 
 ## AppBarLayout 
-+ a vertical LinearLayout
++ a vertical LinearLayout, toolbar 只是作为其中一个子view
 + app:layout_scrollFlags. setScrollFlags(int)
 + a direct child within a CoordinatorLayout
+
+## AppBarLayout layout_scrollFlags
+https://medium.com/@tonia.tkachuk/appbarlayout-scroll-behavior-with-layout-scrollflags-2eec41b4366b
++ scroll : appbar 和滑动的内容是一体的, 不常用但是一个基础
++ enterAlways : 任何时候乡下滚动, appbar都会出现 
+enterAlwaysCollapsed 
+exitUntilCollapsed : AppBarLayout 会有一个最小高度 minHeight
+snap : 不会有显示一半的情况
+
+## CollapsingToolbarLayout
+https://guides.codepath.com/android/Handling-Scrolls-with-CoordinatorLayout#responding-to-scroll-events
++ 作为AppBarLayout 的child, toolbar的parent, 制造视差效果
++ layout_collapseMode pin 或 parallax

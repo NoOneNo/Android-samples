@@ -1,4 +1,4 @@
-package com.d.uidraw.progress
+package com.d.ui.progress
 
 import android.os.Bundle
 import android.support.annotation.StyleRes

@@ -9,6 +9,13 @@
         <EditTextPreference
             android:key="edit_text_pref"
             android:title="edit text"/>
+
+        <ListPreference
+            android:key="list_pref"
+            android:title="list select"
+            android:entries="@array/chimeVolumeLabels"
+            android:entryValues="@array/chimeVolumeValues"
+            />
     </PreferenceCategory>
 
     <PreferenceCategory

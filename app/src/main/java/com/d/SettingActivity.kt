@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceFragmentCompat
-import com.d.uidraw.progress.EditTextFragment
-import com.d.uidraw.progress.ProgressFragment
+import com.d.ui.progress.EditTextFragment
+import com.d.ui.progress.ProgressFragment
 import com.d.webview.WebViewActivity
 
 class SettingActivity : AppCompatActivity() {
