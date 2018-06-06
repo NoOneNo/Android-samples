@@ -28,8 +28,14 @@ Android系统的开机画面显示过程分析
 + device_create来创建一个类别为graphics的设备fbcon
 + fb_register_client来监听帧缓冲区硬件设备的注册事件
 
+## Gralloc
 https://blog.csdn.net/luoshengyang/article/details/7747932 -- 2
 Android帧缓冲区（Frame Buffer）硬件抽象层（HAL）模块Gralloc的实现原理分析
++ Gralloc模块(HAL) ->  gralloc设备(图形缓冲区) -> FB设备(Linux字符设备 帧缓冲区)
 
-https://blog.csdn.net/luoshengyang/article/details/7846923 -- 3
-Android应用程序与SurfaceFlinger服务的关系概述和学习计划
+
+
+## Butter
+https://blog.csdn.net/innost/article/details/8272867
++ Android Project Butter分析 -- 鄧平凡
+
