@@ -18,3 +18,9 @@ https://blog.csdn.net/dlutbrucezhang/article/details/9050467
 
 Linux环境进程间通信
 https://www.ibm.com/developerworks/cn/linux/l-ipc/part1/index.html
+
+四库全书
+1.《Linux内核设计与实现》
+2.《深入理解Linux内核》
+3.《LINUX设备驱动程序(第3版)》
+4.《Linux内核源代码情景分析》
