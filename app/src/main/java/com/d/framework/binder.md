@@ -34,3 +34,6 @@ https://www.zhihu.com/question/48161206
 http://www.cnblogs.com/albert1017/p/3849585.html
 （原创）Android Binder设计与实现 - 实现篇（1）- 2014
 + 图解Binder
+
+https://mr-cao.gitbooks.io/android/content/android-binder.html
+BBinder BpBinder
