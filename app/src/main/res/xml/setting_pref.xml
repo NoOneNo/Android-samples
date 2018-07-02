@@ -33,5 +33,9 @@
             android:key="edit_text"
             android:title="edit text view"/>
 
+        <Preference
+            android:key="get_view"
+            android:title="get view"/>
+
     </PreferenceCategory>
 </PreferenceScreen>
