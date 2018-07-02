@@ -55,10 +55,20 @@ SharedBufferServer
 
 开机动画程序bootanim如何请求SurfaceFlinger创建Surface显示开机动画
 
+## SurfaceComposerClient.createSurface -> SurfaceControl
+
+## BpSurfaceComposerClient.createSurface -> BpSurface
+
+## Client.createSurface -> SurfaceLayer
+
 1. 客户端获得Surface
 获得SurfaceComposerClient(单例), 通过BpSurfaceComposerClient代理对象, 请求对应的SF内的Client, 
 createSurface, 获得代理BpSurface, 对应SF中的SurfaceLayer
 封装结果为SurfaceControl对象
+
+## SurfaceFlinger.createSurface -> Layer
+
+## Layer.getSurface -> Layer::SurfaceLayer
 
 2. SurfaceFlinger创建Surface
 Binder本地对象Client, 通过mFlinger获得 SurfaceFlinger, 调用createSurface

@@ -1,4 +1,4 @@
-package com.d.contentProvider
+package com.d.comp4.contentProvider
 
 import android.annotation.SuppressLint
 import android.content.ContentProvider
