@@ -7,6 +7,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
+import java.nio.channels.Selector
 
 
 // ByteString & String
@@ -78,4 +79,20 @@ val sink = object :Sink {
     override fun close() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+}
+
+
+fun nio() {
+
+    // socket.accept()、socket.read()、socket.write() 是阻塞的
+
+    // NIO的主要事件有几个：读就绪、写就绪、有新连接到来
+
+
+    // select是阻塞的为了获得nio事件, 底层是操作系统的select, poll, epoll
+    // 所以一般还是需要一个循环操作
+    // Reactor模式
+    Selector.open().select()
+
+
 }
