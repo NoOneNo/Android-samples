@@ -30,8 +30,8 @@
         <activity android:name=".SettingActivity"/>
 
         <provider
-            android:authorities="com.d.contentProvider"
-            android:name=".contentProvider.MyContentProvider"
+            android:authorities="com.d.comp4.contentProvider"
+            android:name="com.d.comp4.contentProvider.MyContentProvider"
             android:exported="false"/>
 
     </application>
