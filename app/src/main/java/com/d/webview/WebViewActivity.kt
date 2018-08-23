@@ -2,12 +2,17 @@ package com.d.webview
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +20,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.webkit.*
 import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toast
 import com.d.R
 import kotlinx.android.synthetic.main.activity_webview.*
@@ -49,16 +55,43 @@ class WebViewActivity : AppCompatActivity() {
             mWebView2Fragment?.forword()
         }
 
-        web_url_et.setOnEditorActionListener { v, actionId, event ->
-            mWebView2Fragment?.loadurl(web_url_et.text.toString())
-            return@setOnEditorActionListener true
-        }
+//        web_url_et.setOnEditorActionListener { v, actionId, event ->
+//            mWebView2Fragment?.loadurl(web_url_et.text.toString())
+//            return@setOnEditorActionListener true
+//        }
+
+        setSupportActionBar(null)
     }
 
     fun setUrl(url:String?) {
-        web_url_et.setText(url)
-        content_container.requestFocus()
-        content_container.clearFocus()
+//        web_url_et.setText(url)
+//        content_container.requestFocus()
+//        content_container.clearFocus()
+    }
+
+    fun onShowCustomView(view: View?, callback: WebChromeClient.CustomViewCallback?) {
+
+        full_screen.addView(view)
+        full_screen.visibility = View.VISIBLE
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+    }
+
+    fun onHideCustomView() {
+        full_screen.visibility = View.GONE
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+    }
+
+    override fun onBackPressed() {
+        if (mWebView2Fragment?.canback()!!) {
+            mWebView2Fragment?.back()
+            return
+        }
+        super.onBackPressed()
+
     }
 
     fun hideKeyBoard() {
@@ -72,7 +105,7 @@ class WebViewActivity : AppCompatActivity() {
 }
 
 class WebView2Fragment : Fragment() {
-    var mWebView:WebView? = null
+    var mWebView:MyWebView? = null
 
     @SuppressLint("InflateParams")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -80,7 +113,7 @@ class WebView2Fragment : Fragment() {
 
         mWebView?.destroy()
 
-        mWebView = object : WebView(context) {
+        mWebView = object : MyWebView(context) {
             override fun onPageStarted(view: android.webkit.WebView?, url: String?, favicon: Bitmap?) {
                 this@WebView2Fragment.onPageStarted(url)
             }
@@ -97,7 +130,21 @@ class WebView2Fragment : Fragment() {
 
         view.findViewById<FrameLayout>(R.id.web_view_container2).addView(mWebView)
 
-        loadurl("http://i.jandan.net/top")
+        (mWebView as MyWebView).webChromeClient = object : MyWebChromeClient(mWebView as MyWebView) {
+            override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
+//                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                (activity as WebViewActivity).onShowCustomView(view, callback)
+            }
+
+            override fun onHideCustomView() {
+                (activity as WebViewActivity).onHideCustomView()
+            }
+        }
+
+          loadurl("http://m.youtube.com")
+//        loadurl("http://www.bilibili.com")
+//        loadurl("http://i.jandan.net/top")
+//        loadurl("http://wapv.sogou.com/teleplay/orswyzlqnrqxsxzwgi3denztbhol7t5lwsvq.html")
 //        loadurl("https://www.html5test.com")
 
 //                loadUrl("https://account.xiaomi.com/oauth2/authorize" +
@@ -138,7 +185,7 @@ class WebView2Fragment : Fragment() {
 
     fun loadurl(url: String) {
         mWebView?.loadUrl(url)
-        (activity as WebViewActivity).hideKeyBoard()
+//        (activity as WebViewActivity).hideKeyBoard()
     }
 
     fun forword() {
@@ -149,17 +196,76 @@ class WebView2Fragment : Fragment() {
         mWebView?.goBack()
     }
 
+    fun canback():Boolean {
+        return mWebView?.canGoBack()!!
+    }
+
     fun onPageStarted(url: String?) {
         (activity as WebViewActivity).setUrl(url)
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun showBigTh(context: Context, msg: String) {
+        val dialog = AlertDialog.Builder(context, android.R.style.Theme_Material_Light_NoActionBar_Fullscreen).setMessage(msg).create()
+        dialog.show()
+        (dialog.findViewById<View>(android.R.id.message) as TextView).setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+        (dialog.findViewById<View>(android.R.id.message) as TextView).setTextIsSelectable(true)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun showBigTh(context: Context, view:View):AlertDialog {
+        val dialog = AlertDialog.Builder(context, android.R.style.Theme_Material_Light_NoActionBar_Fullscreen)
+                .setView(view)
+                .create()
+        dialog.show()
+        return dialog
     }
 }
 
 
+open class MyWebChromeClient(val webView: MyWebView) : android.webkit.WebChromeClient() {
+    override fun onProgressChanged(view: android.webkit.WebView?, newProgress: Int) {
+        super.onProgressChanged(view, newProgress)
+        webView.onProgressChanged(view, newProgress)
+    }
+
+    override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
+        Toast.makeText(webView.context, "ConsoleMessage: " + consoleMessage?.message() + " -- From line "
+                + consoleMessage?.lineNumber() + " of "
+                + consoleMessage?.sourceId(), Toast.LENGTH_SHORT).show()
+        return super.onConsoleMessage(consoleMessage)
+    }
+}
+
+class MyWebViewClient(val webView: MyWebView) : android.webkit.WebViewClient() {
+    val context = webView.context
+    override fun onReceivedError(view: android.webkit.WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+        super.onReceivedError(view, request, error)
+        Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onReceivedHttpError(view: android.webkit.WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?) {
+        super.onReceivedHttpError(view, request, errorResponse)
+        Toast.makeText(context, errorResponse.toString(), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onReceivedSslError(view: android.webkit.WebView?, handler: SslErrorHandler?, error: SslError?) {
+        super.onReceivedSslError(view, handler, error)
+        Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+    }
+
+    override fun shouldOverrideUrlLoading(view: android.webkit.WebView?, url: String?): Boolean {
+        return webView.shouldOverrideUrlLoading(view, url)
+    }
+
+    override fun onPageStarted(view: android.webkit.WebView?, url: String?, favicon: Bitmap?) {
+        webView.onPageStarted(view, url, favicon)
+    }
+}
 
 @SuppressLint("SetJavaScriptEnabled")
-open class WebView(context:Context?) : android.webkit.WebView(context) {
-
-
+open class MyWebView(context:Context?) : android.webkit.WebView(context) {
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             setWebContentsDebuggingEnabled(true)
@@ -180,52 +286,11 @@ open class WebView(context:Context?) : android.webkit.WebView(context) {
         settings.allowUniversalAccessFromFileURLs = true
 
 
-        webViewClient = object : WebViewClient() {
-            override fun onReceivedError(view: android.webkit.WebView?, request: WebResourceRequest?, error: WebResourceError?) {
-                super.onReceivedError(view, request, error)
-                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onReceivedHttpError(view: android.webkit.WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?) {
-                super.onReceivedHttpError(view, request, errorResponse)
-                Toast.makeText(context, errorResponse.toString(), Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onReceivedSslError(view: android.webkit.WebView?, handler: SslErrorHandler?, error: SslError?) {
-                super.onReceivedSslError(view, handler, error)
-                Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
-            }
-
-            override fun shouldOverrideUrlLoading(view: android.webkit.WebView?, url: String?): Boolean {
-                return this@WebView.shouldOverrideUrlLoading(view, url)
-            }
-
-            override fun onPageStarted(view: android.webkit.WebView?, url: String?, favicon: Bitmap?) {
-                this@WebView.onPageStarted(view, url, favicon)
-            }
-
-
-        }
-        webChromeClient = object : WebChromeClient() {
-            override fun onProgressChanged(view: android.webkit.WebView?, newProgress: Int) {
-                super.onProgressChanged(view, newProgress)
-                this@WebView.onProgressChanged(view, newProgress)
-            }
-
-            override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-                Toast.makeText(context, "ConsoleMessage: " + consoleMessage?.message() + " -- From line "
-                        + consoleMessage?.lineNumber() + " of "
-                        + consoleMessage?.sourceId(), Toast.LENGTH_SHORT).show()
-                return super.onConsoleMessage(consoleMessage)
-            }
-        }
-
-
+        webViewClient = MyWebViewClient(this)
+        webChromeClient = MyWebChromeClient(this)
     }
 
     override fun loadUrl(urlIn: String) {
-
-
         var url = urlIn
         if(!url.startsWith("www.")&& !url.startsWith("http://") && !url.startsWith("https://")){
             url = "www.$url"

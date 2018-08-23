@@ -25,6 +25,8 @@
 
         <activity
             android:name=".webview.WebViewActivity"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".SettingActivity"/>

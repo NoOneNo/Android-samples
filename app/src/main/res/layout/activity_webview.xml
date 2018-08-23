@@ -65,15 +65,15 @@
 
             <EditText
                 android:id="@+id/web_url_et"
-                android:layout_width="match_parent"
+                android:layout_width="300dp"
                 android:layout_height="50dp"
                 android:background="@android:color/transparent"
                 android:imeActionLabel="Go"
                 android:imeOptions="actionGo"
-                android:paddingEnd="150dp"
                 android:paddingStart="16dp"
                 android:selectAllOnFocus="true"
                 android:singleLine="true"
+                android:focusedByDefault="false"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
@@ -97,5 +97,11 @@
             android:layout_height="match_parent"/>
 
     </android.support.v4.widget.NestedScrollView>
+
+    <FrameLayout
+        android:id="@+id/full_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
 </android.support.design.widget.CoordinatorLayout>
