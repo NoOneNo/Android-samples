@@ -4,10 +4,13 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+
+
 def miuiFrameworkBootClassPath = project.buildscript.sourceFile.getParent() + '/framework-8.0.jar'
 
 android {
     compileSdkVersion 27
+    buildToolsVersion "27.0.3"
     defaultConfig {
         applicationId "com.d"
         minSdkVersion 18
@@ -28,6 +31,10 @@ android {
     lintOptions {
         disable 'PrivateResource'
     }
+
+//    dataBinding {
+//        enabled = true
+//    }
 }
 
 afterEvaluate {
@@ -36,7 +43,13 @@ afterEvaluate {
     }
 }
 
+//kapt {
+//    generateStubs = true
+//}
+
 dependencies {
+//    kapt "com.android.databinding:compiler:3.1.4"
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version" // 100k
 
