@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.Paint
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -55,18 +57,19 @@ class WebViewActivity : AppCompatActivity() {
             mWebView2Fragment?.forword()
         }
 
-//        web_url_et.setOnEditorActionListener { v, actionId, event ->
-//            mWebView2Fragment?.loadurl(web_url_et.text.toString())
-//            return@setOnEditorActionListener true
-//        }
+        web_url_et.setOnEditorActionListener { v, actionId, event ->
+            mWebView2Fragment?.loadurl(web_url_et.text.toString())
+            return@setOnEditorActionListener true
+        }
+
+        web_url_et.paintFlags =  0
 
         setSupportActionBar(null)
     }
 
     fun setUrl(url:String?) {
-//        web_url_et.setText(url)
-//        content_container.requestFocus()
-//        content_container.clearFocus()
+        web_url_et.setText(url)
+        web_url_et.clearFocus()
     }
 
     fun onShowCustomView(view: View?, callback: WebChromeClient.CustomViewCallback?) {
@@ -81,10 +84,6 @@ class WebViewActivity : AppCompatActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
-        super.onConfigurationChanged(newConfig)
-    }
-
     override fun onBackPressed() {
         if (mWebView2Fragment?.canback()!!) {
             mWebView2Fragment?.back()
@@ -92,15 +91,6 @@ class WebViewActivity : AppCompatActivity() {
         }
         super.onBackPressed()
 
-    }
-
-    fun hideKeyBoard() {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(window.decorView.rootView.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
-
-        window.setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
-        )
     }
 }
 
@@ -132,7 +122,6 @@ class WebView2Fragment : Fragment() {
 
         (mWebView as MyWebView).webChromeClient = object : MyWebChromeClient(mWebView as MyWebView) {
             override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
-//                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                 (activity as WebViewActivity).onShowCustomView(view, callback)
             }
 
@@ -141,6 +130,7 @@ class WebView2Fragment : Fragment() {
             }
         }
 
+//          loadurl("http://www.iqiyi.com")
           loadurl("http://m.youtube.com")
 //        loadurl("http://www.bilibili.com")
 //        loadurl("http://i.jandan.net/top")
@@ -231,9 +221,9 @@ open class MyWebChromeClient(val webView: MyWebView) : android.webkit.WebChromeC
     }
 
     override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
-        Toast.makeText(webView.context, "ConsoleMessage: " + consoleMessage?.message() + " -- From line "
-                + consoleMessage?.lineNumber() + " of "
-                + consoleMessage?.sourceId(), Toast.LENGTH_SHORT).show()
+//        Toast.makeText(webView.context, "ConsoleMessage: " + consoleMessage?.message() + " -- From line "
+//                + consoleMessage?.lineNumber() + " of "
+//                + consoleMessage?.sourceId(), Toast.LENGTH_SHORT).show()
         return super.onConsoleMessage(consoleMessage)
     }
 }
