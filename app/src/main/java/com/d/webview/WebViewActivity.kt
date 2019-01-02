@@ -1,7 +1,9 @@
 package com.d.webview
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -9,6 +11,7 @@ import android.graphics.Paint
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
@@ -22,11 +25,15 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.webkit.*
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.d.R
 import kotlinx.android.synthetic.main.activity_webview.*
 import kotlinx.android.synthetic.main.web_browser_layout.*
+import java.io.File
+import java.io.FileOutputStream
+import java.util.*
 
 class WebViewActivity : AppCompatActivity() {
 
@@ -67,13 +74,73 @@ class WebViewActivity : AppCompatActivity() {
         setSupportActionBar(null)
     }
 
+    private fun takeScreenshot(view: View) {
+        val now = Date()
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now)
+
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+            val mPath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg"
+
+            Log.e("debug", "start")
+
+            // create bitmap screen capture
+            val v1 = view
+            v1.setDrawingCacheEnabled(true)
+            val bitmap = Bitmap.createBitmap(v1.getDrawingCache())
+            v1.setDrawingCacheEnabled(false)
+
+            Log.e("debug", "createBitmap")
+
+            val imageFile = File(mPath)
+
+
+            val outputStream = FileOutputStream(imageFile)
+            val quality = 100
+            bitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream)
+            outputStream.flush()
+            outputStream.close()
+
+            Log.e("debug", "compress PNG to outputStream")
+
+//            openScreenshot(imageFile)
+
+
+//            val imageView = ImageView(this)
+//            imageView.setImageBitmap(bitmap)
+
+//            val dialog = android.app.AlertDialog.Builder(this).setView(imageView).setOnDismissListener {
+//
+//            }.create()
+//            dialog.show()
+
+
+        } catch (e: Throwable) {
+            // Several error may come out with file handling or DOM
+            e.printStackTrace()
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    fun asyncTest(webView: MyWebView) {
+        val jss1 = "var s = \"hello\";"
+        val jss = "for(i in [1,2,3,4,5,6,7,8,9]) {console.log(s + i)};"
+//        val jss = "new Worker(window.URL.createObjectURL(new Blob([\"onmessage = function(s) {for(i in [1,2,3,4,5,6,7,8,9]) {console.log(s + i)};}\"], { type: 'text/javascript' }))).postMessage(s);"
+
+        webView.evaluateJavascript(jss1, null)
+
+
+        for (i in arrayOf(1,2,3,4,5)) {
+            webView.evaluateJavascript(jss, null)
+        }
+    }
+
     fun setUrl(url:String?) {
         web_url_et.setText(url)
         web_url_et.clearFocus()
     }
 
     fun onShowCustomView(view: View?, callback: WebChromeClient.CustomViewCallback?) {
-
         full_screen.addView(view)
         full_screen.visibility = View.VISIBLE
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -97,7 +164,7 @@ class WebViewActivity : AppCompatActivity() {
 class WebView2Fragment : Fragment() {
     var mWebView:MyWebView? = null
 
-    @SuppressLint("InflateParams")
+    @SuppressLint("InflateParams", "JavascriptInterface")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.web_browser_layout, null)
 
@@ -125,13 +192,27 @@ class WebView2Fragment : Fragment() {
                 (activity as WebViewActivity).onShowCustomView(view, callback)
             }
 
+            override fun onShowCustomView(view: View?, requestedOrientation: Int, callback: CustomViewCallback?) {
+                (activity as WebViewActivity).onShowCustomView(view, callback)
+            }
+
             override fun onHideCustomView() {
                 (activity as WebViewActivity).onHideCustomView()
             }
         }
 
+        (mWebView as MyWebView).addJavascriptInterface(object {
+            @JavascriptInterface
+            fun getAppData(s:String):String {
+                return s
+            }
+        }, "AndroidApp")
+
+
+        loadurl("file:///android_asset/runtime.html")
+//        loadurl("http://127.0.0.1:7070/post/")
 //          loadurl("http://www.iqiyi.com")
-          loadurl("http://m.youtube.com")
+//          loadurl("http://m.youtube.com")
 //        loadurl("http://www.bilibili.com")
 //        loadurl("http://i.jandan.net/top")
 //        loadurl("http://wapv.sogou.com/teleplay/orswyzlqnrqxsxzwgi3denztbhol7t5lwsvq.html")
@@ -148,25 +229,16 @@ class WebView2Fragment : Fragment() {
     }
 
 
-    /**
-     * Called when the fragment is visible to the user and actively running. Resumes the WebView.
-     */
     override fun onPause() {
         super.onPause()
         mWebView?.onPause()
     }
 
-    /**
-     * Called when the fragment is no longer resumed. Pauses the WebView.
-     */
     override fun onResume() {
         mWebView?.onResume()
         super.onResume()
     }
 
-    /**
-     * Called when the fragment is no longer in use. Destroys the internal state of the WebView.
-     */
     override fun onDestroy() {
         mWebView?.destroy()
         mWebView = null
@@ -175,7 +247,6 @@ class WebView2Fragment : Fragment() {
 
     fun loadurl(url: String) {
         mWebView?.loadUrl(url)
-//        (activity as WebViewActivity).hideKeyBoard()
     }
 
     fun forword() {
@@ -224,6 +295,7 @@ open class MyWebChromeClient(val webView: MyWebView) : android.webkit.WebChromeC
 //        Toast.makeText(webView.context, "ConsoleMessage: " + consoleMessage?.message() + " -- From line "
 //                + consoleMessage?.lineNumber() + " of "
 //                + consoleMessage?.sourceId(), Toast.LENGTH_SHORT).show()
+//        Log.e("console", "ConsoleMessage: " + consoleMessage?.message())
         return super.onConsoleMessage(consoleMessage)
     }
 }
@@ -232,17 +304,20 @@ class MyWebViewClient(val webView: MyWebView) : android.webkit.WebViewClient() {
     val context = webView.context
     override fun onReceivedError(view: android.webkit.WebView?, request: WebResourceRequest?, error: WebResourceError?) {
         super.onReceivedError(view, request, error)
-        Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+        Log.e("MyWebViewClient", "onReceivedError: " + error.toString())
     }
 
     override fun onReceivedHttpError(view: android.webkit.WebView?, request: WebResourceRequest?, errorResponse: WebResourceResponse?) {
         super.onReceivedHttpError(view, request, errorResponse)
-        Toast.makeText(context, errorResponse.toString(), Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context, errorResponse.toString(), Toast.LENGTH_SHORT).show()
+        Log.e("MyWebViewClient", "onReceivedError: " + errorResponse.toString())
     }
 
     override fun onReceivedSslError(view: android.webkit.WebView?, handler: SslErrorHandler?, error: SslError?) {
         super.onReceivedSslError(view, handler, error)
-        Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+        Log.e("MyWebViewClient", "onReceivedError: " + error.toString())
     }
 
     override fun shouldOverrideUrlLoading(view: android.webkit.WebView?, url: String?): Boolean {
@@ -251,6 +326,11 @@ class MyWebViewClient(val webView: MyWebView) : android.webkit.WebViewClient() {
 
     override fun onPageStarted(view: android.webkit.WebView?, url: String?, favicon: Bitmap?) {
         webView.onPageStarted(view, url, favicon)
+    }
+
+    override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
+        val res = super.shouldInterceptRequest(view, request)
+        return res
     }
 }
 
@@ -278,16 +358,20 @@ open class MyWebView(context:Context?) : android.webkit.WebView(context) {
 
         webViewClient = MyWebViewClient(this)
         webChromeClient = MyWebChromeClient(this)
+
     }
 
     override fun loadUrl(urlIn: String) {
         var url = urlIn
-        if(!url.startsWith("www.")&& !url.startsWith("http://") && !url.startsWith("https://")){
-            url = "www.$url"
+        if (!url.startsWith("file")) {
+            if(!url.startsWith("www.")&& !url.startsWith("http://") && !url.startsWith("https://")){
+                url = "www.$url"
+            }
+            if(!url.startsWith("http://") && !url.startsWith("https://")){
+                url = "http://$url"
+            }
         }
-        if(!url.startsWith("http://") && !url.startsWith("https://")){
-            url = "http://$url"
-        }
+
         super.loadUrl(url)
     }
 
@@ -301,5 +385,9 @@ open class MyWebView(context:Context?) : android.webkit.WebView(context) {
 
     open fun onProgressChanged(view: android.webkit.WebView?, newProgress: Int) {
 
+    }
+
+    override fun postUrl(url: String?, postData: ByteArray?) {
+        super.postUrl(url, postData)
     }
 }

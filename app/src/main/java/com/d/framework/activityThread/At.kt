@@ -1,6 +1,6 @@
 package com.d.framework.activityThread
 
-import android.app.ActivityThread
+//import android.app.ActivityThread
 import android.content.pm.PackageManager
 
 class ActivityThreadCustom {
@@ -14,11 +14,11 @@ class ActivityThreadCustom {
 
         // https://developer.android.com/preview/restrictions-non-sdk-interfaces?hl=zh-cn
 
-        ActivityThread.currentActivityThread()
-
-        ActivityThread.currentApplication()
-
-        ActivityThread.getPackageManager()
+//        ActivityThread.currentActivityThread()
+//
+//        ActivityThread.currentApplication()
+//
+//        ActivityThread.getPackageManager()
 
         // 可以通过resID得到其他app的资源
         // (ActivityThread.getPackageManager() as PackageManager).getText()

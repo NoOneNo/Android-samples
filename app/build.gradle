@@ -35,27 +35,48 @@ android {
 //    dataBinding {
 //        enabled = true
 //    }
-}
 
-afterEvaluate {
-    tasks.withType(JavaCompile) {
-        options.compilerArgs = ["-Xbootclasspath/p:"+miuiFrameworkBootClassPath]
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/kotlinx-coroutines-io.kotlin_module'
+        exclude 'META-INF/atomicfu.kotlin_module'
+        exclude 'META-INF/INDEX.LIST'
+        exclude 'META-INF/kotlinx-io.kotlin_module'
+        exclude 'META-INF/io.netty.versions.properties'
     }
 }
 
+//afterEvaluate {
+//    tasks.withType(JavaCompile) {
+//        options.compilerArgs = ["-Xbootclasspath/p:"+miuiFrameworkBootClassPath]
+//    }
+//}
+
 //kapt {
 //    generateStubs = true
+//}
+
+sourceCompatibility = 1.8
+//compileKotlin {
+//    kotlinOptions.jvmTarget = "1.8"
+//}
+//compileTestKotlin {
+//    kotlinOptions.jvmTarget = "1.8"
 //}
 
 dependencies {
 //    kapt "com.android.databinding:compiler:3.1.4"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version" // 100k
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version" // 100k
 
-//    implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
 
-    provided files(miuiFrameworkBootClassPath)
+//    provided files(miuiFrameworkBootClassPath)
 
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:cardview-v7:27.1.1'
@@ -102,6 +123,10 @@ dependencies {
 
     // De
     implementation 'com.github.arimorty:floatingsearchview:2.1.1'
+
+    compile "io.ktor:ktor-server-core:1.1.1"
+    compile "io.ktor:ktor-server-netty:1.1.1"
+
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'

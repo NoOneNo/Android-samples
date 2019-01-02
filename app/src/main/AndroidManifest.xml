@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -35,6 +37,10 @@
             android:authorities="com.d.comp4.contentProvider"
             android:name="com.d.comp4.contentProvider.MyContentProvider"
             android:exported="false"/>
+
+        <service
+                android:name="com.d.webview.KtorService"
+                android:exported="true" />
 
     </application>
 

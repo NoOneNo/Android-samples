@@ -17,11 +17,11 @@ class BadBoy(val context: Context) {
         // 这样获得的　WindowManagerImpl　没有　window
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
-        val names = WindowManagerGlobal.getInstance().viewRootNames
-        Log.i("TAG" , "" + names)
-
-        val view = WindowManagerGlobal.getInstance().getRootView(names[0])
-        Log.i("TAG" , "" + view)
+//        val names = WindowManagerGlobal.getInstance().viewRootNames
+//        Log.i("TAG" , "" + names)
+//
+//        val view = WindowManagerGlobal.getInstance().getRootView(names[0])
+//        Log.i("TAG" , "" + view)
 
     }
 }

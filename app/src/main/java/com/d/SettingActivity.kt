@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceFragmentCompat
 import com.d.ui.progress.EditTextFragment
 import com.d.ui.progress.ProgressFragment
+import com.d.ui.resize.ResizeFragment
 import com.d.ui.wm.BadBoy
 import com.d.webview.WebViewActivity
 
@@ -42,5 +43,12 @@ class SettingFragment : PreferenceFragmentCompat() {
             BadBoy(activity!!.applicationContext).getView()
             return@setOnPreferenceClickListener true
         }
+
+
+        findPreference("resize").setOnPreferenceClickListener {
+            activity!!.supportFragmentManager.beginTransaction().replace(android.R.id.content, ResizeFragment()).addToBackStack(null).commit()
+            return@setOnPreferenceClickListener true
+        }
+
     }
 }
