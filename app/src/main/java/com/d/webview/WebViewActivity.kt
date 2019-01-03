@@ -241,7 +241,7 @@ class WebView2Fragment : Fragment() {
 
         mJsAsyncBridge.addDataListener(object :JsAsyncBridge.DataListener {
             override fun getKey(): String {
-                return "/image"
+                return "image"
             }
 
             override fun onReceive(objects: Any) {
@@ -259,7 +259,7 @@ class WebView2Fragment : Fragment() {
 
         mJsAsyncBridge.addDataListener(object :JsAsyncBridge.DataListener {
             override fun getKey(): String {
-                return "/base64image"
+                return "base64image"
             }
 
             override fun onReceive(objects: Any) {

@@ -9,21 +9,24 @@ console.log("canvas.width:"+ canvas.width);
 canvas.style.height = "${window.screen.height}px";
 canvas.style.width =  "${window.screen.width}px";
 
+canvas.height = window.screen.height*2;
+canvas.width =  window.screen.width*2; // request contentLength: 1722401
+
 // canvas.style.height = "${window.innerHeight}px";
 // canvas.style.width =  "${window.innerWidth}px";
 
-canvas.height = window.screen.height;
-canvas.width =  window.screen.width;
+
 
 // canvas.height = 600;
 // canvas.width =  300;
 
 
-canvas.style.height = "350px";
-canvas.style.width =  "350px";
+// canvas.style.width =  "350px";
+// canvas.style.height = "650px";
+//
+// canvas.width =  350;
+// canvas.height = 650;
 
-canvas.height = 350;
-canvas.width =  350;
 
 
 console.log("window.screen.height:"+ window.screen.height);
@@ -61,71 +64,38 @@ imageObj.src = 'https://www.html5canvastutorials.com/demos/assets/darth-vader.jp
 // console.log("after send data:"+ new Date().getSeconds() + "." + new Date().getMilliseconds());
 
 
-function sendReq() {
-
-  var dataURL = canvas.toDataURL( "image/png" );
-// var data = dataURL + dataURL+ dataURL+ dataURL;
-  var olddata = dataURL.substring( "data:image/png;base64,".length );
-  var data = olddata;
-
-  // var e = new TextDecoder("iso-8859-1");
-  // var data = e.decode(olddata.buffer);
-
-  console.log("data:"+ data.substr(0, 30));
-  console.log("data:"+ data.substr(data.length-30, data.length));
+function sendCanvas() {
+  console.log("-------to dataURL-----------");
+  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
+  const dataURL = canvas.toDataURL( "image/png" );
+  const data  = dataURL.substring( "data:image/png;base64,".length );
   console.log("data.length:"+ data.length);
+  const blob = new Blob( [ data ], {type: 'text/plain'} );
+  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
 
 
-  var blob = new Blob( [ data ], {type: 'text/plain'} );
-
-  var url = JsAsyncBridge.getServerUrl() + "base64image";
-  var oReq = new XMLHttpRequest();
-
-  oReq.onload = function (oEvent) {
-    // console.log("get data:"+ new Date().getSeconds() + "." + new Date().getMilliseconds());
-
-    // console.log("oReq.response.length:"+ oReq.response.length);
-
-    // var myCanvas = document.getElementById('canvas');
-    // var ctx = myCanvas.getContext('2d');
-    // var img = new Image;
-    // img.onload = function(){
-    //   ctx.drawImage(img,0,0); // Or at whatever offset you like
-    // };
-    // img.src = oReq.response;
-  };
-
-  oReq.onreadystatechange = function() {
-    // console.log("this.status: " + this.status);
-  };
-
-// oReq.open("GET", url, true);
-// oReq.send(null);
-
-  oReq.open("POST", url, true);
-  // console.log("pre get data:"+ new Date().getSeconds() + "." + new Date().getMilliseconds());
-  oReq.send(blob);
-
-  // var dataFromApp = AndroidApp.getAppData(data);
-  // console.log("pre get data:"+ new Date().getSeconds() + "." + new Date().getMilliseconds());
-  // console.log("data.length:"+ dataFromApp.length);
+  sendBlob("base64image", blob)
 }
 
 
+function sendAsyncCanvas() {
+  canvas.toBlob(function(blob) {
+    sendBlob("image", blob)
+  }, 'image/png', 1);
+}
 
-function sendReq2() {
+function sendClipCanvas() {
+  const newCanvas = clipCanvas(canvas, 0, 0, canvas.width, canvas.height);
 
-  var dataURL = canvas.toDataURL( "image/png" );
+  newCanvas.toBlob(function(blob) {
+    sendBlob("image", blob)
+  }, 'image/png', 1);
+}
 
-  var ctx = canvas.getContext('2d');
-  var img = new Image;
-  img.onload = function(){
-    ctx.drawImage(img,0,0, 200, 200); // Or at whatever offset you like
-  };
-  img.src = dataURL;
+function getcanvasBin(canvas) {
+  const dataURL = canvas.toDataURL( "image/png" );
 
-
-  var data = atob( dataURL.substring( "data:image/png;base64,".length ) ),
+  const data = atob( dataURL.substring( "data:image/png;base64,".length ) ),
     asArray = new Uint8Array(data.length);
 
   for( var i = 0, len = data.length; i < len; ++i ) {
@@ -134,63 +104,48 @@ function sendReq2() {
 
   console.log("data.length: " + data.length);
 
-  var blob = new Blob( [ asArray.buffer ], {type: "image/png"} );
-
-  canvas.toBlob(function(bl) {
-    var url = JsAsyncBridge.getServerUrl() + "image";
-    var oReq = new XMLHttpRequest();
-
-    oReq.onload = function (oEvent) {
-      console.log("oReq.response: "+ oReq.response);
-    };
-
-    oReq.onreadystatechange = function() {
-      console.log("this.status: " + this.status);
-    };
-    oReq.open("POST", url, true);
-    oReq.send(blob);
-  }, 'image/png', 0.5);
-
+  const blob = new Blob( [ asArray.buffer ], {type: "image/png"} );
+  return blob
 }
 
-function sendReq3() {
+function sendBlob(key, blob) {
+  console.log("-------sendBlob-----------");
+  const url = JsAsyncBridge.getServerUrl() + key;
+  const req = new XMLHttpRequest();
 
-  var dataURL = canvas.toDataURL( "image/png" );
-
-  var ctx = canvas.getContext('2d');
-  var img = new Image;
-  img.onload = function(){
-    ctx.drawImage(img,0,0, 200, 200); // Or at whatever offset you like
+  req.onload = function (oEvent) {
+    console.log("oReq.response: "+ req.response);
+    console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
   };
-  img.src = dataURL;
 
-
-  var data = atob( dataURL.substring( "data:image/png;base64,".length ) ),
-    asArray = new Uint8Array(data.length);
-
-  for( var i = 0, len = data.length; i < len; ++i ) {
-    asArray[i] = data.charCodeAt(i);
-  }
-
-  console.log("data.length: " + data.length);
-
-  var blob = new Blob( [ asArray.buffer ], {type: "image/png"} );
-
-  canvas.toBlob(function(bl) {
-    var url = JsAsyncBridge.getServerUrl() + "image";
-    var oReq = new XMLHttpRequest();
-
-    oReq.onload = function (oEvent) {
-      console.log("oReq.response: "+ oReq.response);
-    };
-
-    oReq.onreadystatechange = function() {
-      console.log("this.status: " + this.status);
-    };
-    oReq.open("POST", url, true);
-    oReq.send(blob);
-  }, 'image/png', 0.5);
-
+  req.onreadystatechange = function() {
+    console.log("this.status: " + this.status);
+  };
+  req.open("PUT", url, true);
+  req.send(blob);
+  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
 }
 
+function clipCanvas(canvas, x, y, w, h) {
+  console.log("------clipCanvas----------");
+  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
+  const ctx = canvas.getContext("2d");
+  const clipImg = ctx.getImageData(x, y, w, h);
+
+  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
+
+  const imgCanvas = document.createElement("canvas");
+
+  imgCanvas.style.width =  "${w}px";
+  imgCanvas.style.height = "${h}px";
+
+  imgCanvas.width =  w;
+  imgCanvas.height = h;
+
+  const imgCtx = imgCanvas.getContext("2d");
+
+  imgCtx.putImageData(clipImg, 0, 0, 0, 0, w, h);
+  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
+  return imgCanvas
+}
 

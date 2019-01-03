@@ -1,12 +1,13 @@
 package com.d.webview
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.webkit.JavascriptInterface
-import java.io.*
+import java.io.BufferedOutputStream
+import java.io.DataInputStream
+import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.Socket
 import java.util.*
@@ -62,7 +63,8 @@ class JsAsyncBridgeImpl: JsAsyncBridge {
 
         mKlServer = object : KlServer() {
             override fun route(request: KlRequest): KlResponse {
-                onReceive(request.path, request.body)
+                val key = request.path.substring(mKlServer!!.getToken().length+2)
+                onReceive(key, request.body)
                 return KlResponse(200, "success".toByteArray())
             }
         };
@@ -72,6 +74,9 @@ class JsAsyncBridgeImpl: JsAsyncBridge {
 
     @JavascriptInterface
     fun destory():Boolean {
+        mKlServer!!.destory()
+        mKlServer = null
+        inited = false
         return true
     }
 }
@@ -79,6 +84,7 @@ class JsAsyncBridgeImpl: JsAsyncBridge {
 open class KlServer : Runnable{
     private var serverSocket:ServerSocket
     private var port = 7070
+    private var mToken = java.util.UUID.randomUUID().toString()
 
     init {
         while (true) {
@@ -93,7 +99,11 @@ open class KlServer : Runnable{
     }
 
     fun getServerUrl():String {
-        return "http://127.0.0.1:$port/"
+        return "http://127.0.0.1:$port/$mToken/"
+    }
+
+    fun getToken():String {
+        return mToken
     }
 
     override fun run() {
@@ -104,12 +114,20 @@ open class KlServer : Runnable{
     }
 
     private fun performRequest(socket: Socket) {
-        Log.e("chromium", "receive response")
+        Log.e("chromium", "receive request")
         val inputStream = socket.getInputStream() // mark/reset not support SocketInputStream
         val reader = DataInputStream(inputStream)
-        // val bufferedInputStream = BufferedInputStream(inputStream)
 
         val requestLine = reader.readLine()
+
+        val tokenizer = StringTokenizer(requestLine)
+        val httpMethod = tokenizer.nextToken().toUpperCase() // "GET" or "POST"
+        val path = tokenizer.nextToken()
+
+        if(!path.startsWith("/$mToken")) {
+            Log.e("chromium", "request invalid path: $path")
+            return
+        }
 
         val headers = HashMap<String, String>()
         var header = reader.readLine()
@@ -172,6 +190,10 @@ open class KlServer : Runnable{
     fun start() {
         val thread = Thread(this)
         thread.start()
+    }
+
+    fun destory() {
+        serverSocket.close()
     }
 }
 
