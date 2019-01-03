@@ -13,12 +13,14 @@
     #canvas {
       width: 600px;
       height: 600px;
+      background-color: aquamarine;
     }
 
   </style>
 </head>
 <body>
-  <div id="textIntro" onclick="sendReq()">hello canvas</div>
+  <div id="textIntro" onclick="sendReq2()">----send png byte---</div>
+  <div id="pngBase64" onclick="sendReq()">----send png base64---</div>
   <canvas id="canvas"></canvas>
 
 <script type="text/javascript" src="runtime.js"></script>

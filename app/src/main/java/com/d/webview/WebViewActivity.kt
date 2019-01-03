@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.net.http.SslError
 import android.os.Build
@@ -16,6 +17,7 @@ import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Base64
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -121,6 +123,31 @@ class WebViewActivity : AppCompatActivity() {
         }
     }
 
+    fun saveBitmap(bitmap: Bitmap) {
+        val now = Date()
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now)
+
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+            val mPath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg"
+
+            val imageFile = File(mPath)
+
+
+            val outputStream = FileOutputStream(imageFile)
+            val quality = 100
+            bitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream)
+            outputStream.flush()
+            outputStream.close()
+
+            Log.e("debug", "compress PNG to outputStream")
+
+        } catch (e: Throwable) {
+            // Several error may come out with file handling or DOM
+            e.printStackTrace()
+        }
+    }
+
     @TargetApi(Build.VERSION_CODES.KITKAT)
     fun asyncTest(webView: MyWebView) {
         val jss1 = "var s = \"hello\";"
@@ -163,6 +190,7 @@ class WebViewActivity : AppCompatActivity() {
 
 class WebView2Fragment : Fragment() {
     var mWebView:MyWebView? = null
+    var mJsAsyncBridge = JsAsyncBridgeImpl()
 
     @SuppressLint("InflateParams", "JavascriptInterface")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -208,7 +236,82 @@ class WebView2Fragment : Fragment() {
             }
         }, "AndroidApp")
 
+        mJsAsyncBridge.init()
+        (mWebView as MyWebView).addJavascriptInterface(mJsAsyncBridge, "JsAsyncBridge")
 
+        mJsAsyncBridge.addDataListener(object :JsAsyncBridge.DataListener {
+            override fun getKey(): String {
+                return "/image"
+            }
+
+            override fun onReceive(objects: Any) {
+                val imageView = ImageView(activity)
+                imageView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+                imageView.setImageBitmap(objects as Bitmap)
+                val dialog = android.app.AlertDialog.Builder(activity).setView(imageView)
+                dialog.show()
+
+//                saveBitmap(bitmap)
+
+                mJsAsyncBridge.addDataListener(this)
+            }
+        })
+
+        mJsAsyncBridge.addDataListener(object :JsAsyncBridge.DataListener {
+            override fun getKey(): String {
+                return "/base64image"
+            }
+
+            override fun onReceive(objects: Any) {
+                val s = String(objects as ByteArray, Charsets.UTF_8)
+                Log.e("debug", "start: " + s.subSequence(0, 30))
+                Log.e("debug", "end: " + s.subSequence(s.length - 30, s.length))
+
+                val newobjects = Base64.decode(objects as ByteArray, Base64.DEFAULT)
+
+                val bitmap = BitmapFactory.decodeByteArray(newobjects, 0, newobjects.size) // TODO decode stream
+
+                val imageView = ImageView(activity)
+                imageView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+                imageView.setImageBitmap(bitmap)
+                val dialog = android.app.AlertDialog.Builder(activity).setView(imageView)
+                dialog.show()
+
+                mJsAsyncBridge.addDataListener(this)
+            }
+        })
+
+        initUrl()
+
+        return view
+    }
+
+    fun saveBitmap(bitmap: Bitmap) {
+        val now = Date()
+        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now)
+
+        try {
+            // image naming and path  to include sd card  appending name you choose for file
+            val mPath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".png"
+
+            val imageFile = File(mPath)
+
+
+            val outputStream = FileOutputStream(imageFile)
+            val quality = 100
+            bitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream)
+            outputStream.flush()
+            outputStream.close()
+
+            Log.e("debug", "compress PNG to outputStream")
+
+        } catch (e: Throwable) {
+            // Several error may come out with file handling or DOM
+            e.printStackTrace()
+        }
+    }
+
+    private fun initUrl() {
         loadurl("file:///android_asset/runtime.html")
 //        loadurl("http://127.0.0.1:7070/post/")
 //          loadurl("http://www.iqiyi.com")
@@ -224,8 +327,6 @@ class WebView2Fragment : Fragment() {
 //                        "&redirect_uri=http%3A%2F%2Fpassport.iqiyi.com%2Fapis%2Fthirdparty%2Fncallback.action%3Ffrom%3D30" +
 //                        "&state=d6f72a229f0bae6f16a3228f1ef2dce0" +
 //                        "&client_id=2882303761517310776")
-
-        return view
     }
 
 
