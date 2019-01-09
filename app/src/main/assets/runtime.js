@@ -40,7 +40,7 @@ var imageObj = new Image();
 imageObj.onload = function() {
   context.drawImage(imageObj, 0, 0, canvas.width, canvas.height);
 };
-imageObj.src = 'https://www.html5canvastutorials.com/demos/assets/darth-vader.jpg';
+imageObj.src = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1546609343233&di=7cb4477bff553eefdd3b53d78614d39d&imgtype=0&src=http%3A%2F%2Ffilesrv.iyunshu.com%2FC%2F01575%2F2494966-fm.jpg';
 
 
 // var imagedata = canvas.getContext("2d").getImageData(0,0, canvas.width, canvas.height);
@@ -65,21 +65,21 @@ imageObj.src = 'https://www.html5canvastutorials.com/demos/assets/darth-vader.jp
 
 
 function sendCanvas() {
-  console.log("-------to dataURL-----------");
-  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
+  console.time("todataURL");
   const dataURL = canvas.toDataURL( "image/png" );
   const data  = dataURL.substring( "data:image/png;base64,".length );
   console.log("data.length:"+ data.length);
   const blob = new Blob( [ data ], {type: 'text/plain'} );
-  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
-
+  console.timeEnd("todataURL");
 
   sendBlob("base64image", blob)
 }
 
 
 function sendAsyncCanvas() {
+  console.time("todataURL");
   canvas.toBlob(function(blob) {
+    console.timeEnd("toBlob");
     sendBlob("image", blob)
   }, 'image/png', 1);
 }
@@ -108,31 +108,13 @@ function getcanvasBin(canvas) {
   return blob
 }
 
-function sendBlob(key, blob) {
-  console.log("-------sendBlob-----------");
-  const url = JsAsyncBridge.getServerUrl() + key;
-  const req = new XMLHttpRequest();
 
-  req.onload = function (oEvent) {
-    console.log("oReq.response: "+ req.response);
-    console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
-  };
-
-  req.onreadystatechange = function() {
-    console.log("this.status: " + this.status);
-  };
-  req.open("PUT", url, true);
-  req.send(blob);
-  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
-}
 
 function clipCanvas(canvas, x, y, w, h) {
-  console.log("------clipCanvas----------");
-  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
+  console.time("clipCanvas");
   const ctx = canvas.getContext("2d");
   const clipImg = ctx.getImageData(x, y, w, h);
-
-  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
+  console.timeEnd("clipCanvas");
 
   const imgCanvas = document.createElement("canvas");
 
@@ -145,7 +127,248 @@ function clipCanvas(canvas, x, y, w, h) {
   const imgCtx = imgCanvas.getContext("2d");
 
   imgCtx.putImageData(clipImg, 0, 0, 0, 0, w, h);
-  console.log("------" + new Date().getSeconds() + "." + new Date().getMilliseconds() + "--------");
   return imgCanvas
 }
 
+
+
+function sendJSIStr(key, str) {
+  console.time("sendJSIStr");
+  JsAsyncBridge.putString(key, str);
+  console.timeEnd("sendJSIStr");
+}
+
+function sendJSIByte(key, data) {
+  console.time("sendJSIByte");
+  JsAsyncBridge.putBytes(key, data);
+  console.timeEnd("sendJSIByte");
+}
+
+function sendHttpStrWithBlob(key, str) {
+  console.time("sendHttpStrWithBlob");
+
+  console.time("str-to-blob");
+  const blob = new Blob( [ str ], {type:"text/plain"} );
+  console.timeEnd("str-to-blob");
+
+  const url = JsAsyncBridge.getServerUrl() + key;
+  const req = new XMLHttpRequest();
+
+  req.onload = function (oEvent) {
+    console.timeEnd("sendHttpStrWithBlob");
+  };
+
+  req.open("PUT", url, true);
+  req.send(blob);
+}
+
+function sendHttpStr(key, str) {
+  const url = JsAsyncBridge.getServerUrl() + key;
+  const req = new XMLHttpRequest();
+
+  console.time("sendHttpStr");
+  req.onload = function (oEvent) {
+    console.timeEnd("sendHttpStr");
+    // console.log("oReq.response: "+ req.response);
+  };
+
+  req.open("PUT", url, true);
+  req.send(str);
+  // req.sendAsBinary(str);
+}
+
+function sendHttpStrWithArrayBuffer(key, str) {
+  const url = JsAsyncBridge.getServerUrl() + key;
+  const req = new XMLHttpRequest();
+
+  console.time("sendHttpStr");
+  req.onload = function (oEvent) {
+    console.timeEnd("sendHttpStr");
+    // console.log("oReq.response: "+ req.response);
+  };
+
+  req.open("PUT", url, true);
+  req.send(str);
+  // req.sendAsBinary(str);
+}
+
+function sendBlob(key, blob) {
+  const url = JsAsyncBridge.getServerUrl() + key;
+  const req = new XMLHttpRequest();
+  console.time("sendBlob");
+
+  req.onload = function (oEvent) {
+    console.timeEnd("sendBlob");
+    // console.log("oReq.response: "+ req.response);
+  };
+
+  req.onreadystatechange = function() {
+    // console.log("this.status: " + this.status);
+  };
+
+  req.open("PUT", url, true);
+  req.send(blob);
+}
+
+var port;
+
+function sendStrMsgC(str) {
+  console.time("sendStrMsgC");
+  console.log("------postMessage1----------");
+  port.postMessage(str);
+  console.timeEnd("sendStrMsgC");
+  console.log("------postMessage2----------");
+}
+
+onmessage = function (e) {
+  console.log("------init postMessage----------" + f.data);
+  port = e.ports[0];
+  port.onmessage = function (f) {
+    console.log("------postMessage3----------" + f.data);
+  }
+};
+
+// function conpareSend() {
+//   var data = "严严严严严严严严严严";
+//   console.log("data.length: "+ data.length);
+//
+//   var uint8aa = new TextEncoder().encode(data);
+//   console.log("data to uint8: " + uint8aa.length);
+//
+//   uint8aa = new TextEncoder("iso-8859-1").encode(data);
+//   console.log("data to iso-8859-1: " + uint8aa.length);
+//
+//   sendJSIStr("text", data);
+//   sendHttpStr("text", data);
+//   // sendHttpStrWithBlob("text", data);
+//   // sendStrMsgC(data);
+// }
+
+// function conpareSend() {
+//   const dataURL = canvas.toDataURL( "image/png" );
+//   var data = dataURL; //.substr(0, 2000000);
+//   console.log("data.length: "+ data.length);
+//
+//   //const enc = new TextEncoder();
+//   //const uint8aa = enc.encode(data);
+//   //console.log("data to uint8: " + uint8aa.length);
+//
+//   // sendJSIStr("text", data);
+//   // sendHttpStr("text", data);
+//   sendHttpStr("arrayBuffer", data);
+//   // sendHttpStrWithBlob("arrayBuffer", data);
+//   // sendStrMsgC(data);
+// }
+
+// function conpareSend() {
+//   const dataURL = canvas.toDataURL( "image/png" );
+//   var data = dataURL.substr(0, 2000000);
+//   console.log("data.length: "+ data.length);
+//
+//   data = "严严严严严严严严严严";
+//
+//   console.time("encode-utf-8");
+//   var uint8aa = new TextEncoder().encode(data);
+//   console.log("data to uint8: " + uint8aa.length); // *?= mem
+//   console.timeEnd("encode-utf-8");
+//
+//   console.time("encode-8859");
+//   uint8aa = new TextEncoder("iso-8859-1").encode(data);
+//   console.log("data to iso-8859-1: " + uint8aa.length); //  = mem
+//   console.timeEnd("encode-8859");
+//
+//   // console.time("encode-b64s");
+//   // var b64s = btoa(data);
+//   // console.log("data to b64s: " + b64s.length); // *2= mem // 不能处理中文!!!!
+//   // console.timeEnd("encode-b64s");
+//
+//   console.time("str-to-blob");
+//   var blob = new Blob( [ data ], {type:"text/plain"} );
+//   console.log("data to blob: " + blob.size);
+//   console.timeEnd("str-to-blob");
+//
+//     var fileReader = new FileReader();
+//     fileReader.readAsArrayBuffer(blob);
+//     fileReader.onload = function() {
+//       var arrayBuffer = fileReader.result;
+//       sendHttpStrWithArrayBuffer("arrayBuffer", arrayBuffer)
+//     };
+// }
+
+// function conpareSend() {
+//   console.time("toBlob");
+//   canvas.toBlob(function(blob) {
+//     console.timeEnd("toBlob");
+//
+//     // console.time("readAsDataURL");
+//     // var reader = new FileReader();
+//     // reader.readAsDataURL(blob);
+//     // reader.onloadend = function() {
+//     //   console.timeEnd("readAsDataURL");
+//     //
+//     //   const base64data = reader.result;
+//     //   console.log("base64data: " + base64data.length);
+//     //   sendStrJSI(base64data);
+//     // };
+//
+//     var fileReader = new FileReader();
+//     fileReader.readAsArrayBuffer(blob);
+//     fileReader.onload = function() {
+//       var arrayBuffer = fileReader.result;
+//       var array = new Uint8Array(arrayBuffer);
+//       console.log("arrayBuffer: " + array.length);
+//
+//       console.time("encode-8859");
+//       var dec = new TextDecoder("iso-8859-1").decode(array);
+//       console.log("data to iso-8859-1: " + dec.length); //  = mem
+//       console.timeEnd("encode-8859");
+//
+//       sendJSIStr("arrayBuffer", dec);
+//
+//       // sendHttpStrWithArrayBuffer("arrayBuffer", arrayBuffer)
+//
+//
+//
+//       // console.time("encode-b64s");
+//       // var b64s = btoa(array);
+//       // console.log("data to b64s: " + b64s.length); // *2= mem
+//       // console.timeEnd("encode-b64s");
+//     };
+//
+//
+//     // sendBlob("arrayBuffer", blob)
+//   });
+// }
+
+
+// function conpareSend() {
+//   console.time("toDataURL");
+//   const dataURL = canvas.toDataURL( "image/png" );
+//   console.timeEnd("toDataURL");
+//
+//   console.time("toBlob");
+//   canvas.toBlob(function(blob) {
+//     console.timeEnd("toBlob");
+//   });
+// }
+
+function conpareSend() {
+  var formData = new FormData();
+
+  formData.append("username", "Groucho");
+  // formData.append("accountnum", 123456); // number 123456 is immediately converted to a string "123456"
+
+// HTML file input, chosen by user
+  // formData.append("userfile", fileInputElement.files[0]);
+
+// JavaScript file-like object
+  var content = '<a id="a"><b id="b">hey!</b></a>'; // the body of the new file...
+  var blob = new Blob([content], { type: "text/xml"});
+
+  // formData.append("webmasterfile", blob);
+
+  var request = new XMLHttpRequest();
+  const url = JsAsyncBridge.getServerUrl();
+  request.open("POST", url);
+  request.send(formData);
+}

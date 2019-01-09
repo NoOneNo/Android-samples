@@ -14,12 +14,26 @@
       background-color: aquamarine;
     }
 
+    /*#textIntro {*/
+      /*position:fixed;*/
+      /*left:50px;*/
+      /*top:100px;*/
+      /*background-color: red;*/
+      /*z-index:100;*/
+      /*width:100px;*/
+      /*height:100px;*/
+    /*}*/
+
   </style>
 </head>
 <body>
-  <div id="textIntro" onclick="sendAsyncCanvas()">----send png byte async---</div>
+  <div id="textIntro" onclick="sendAsyncCanvas()" >----send png byte async---</div>
   <div id="pngBase64" onclick="sendCanvas()">----send png base64---</div>
   <div onclick="sendClipCanvas()">----send clip png---</div>
+  <div>--------</div>
+  <div onclick="conpareSend()">----conpareSend---</div>
+  <div>--------</div>
+
   <canvas id="canvas"></canvas>
 
 <script type="text/javascript" src="runtime.js"></script>

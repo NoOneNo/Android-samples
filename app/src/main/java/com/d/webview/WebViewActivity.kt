@@ -9,6 +9,7 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Paint
+import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
 import android.os.Bundle
@@ -263,11 +264,11 @@ class WebView2Fragment : Fragment() {
             }
 
             override fun onReceive(objects: Any) {
-                val s = String(objects as ByteArray, Charsets.UTF_8)
+                val s = objects as String
                 Log.e("debug", "start: " + s.subSequence(0, 30))
                 Log.e("debug", "end: " + s.subSequence(s.length - 30, s.length))
 
-                val newobjects = Base64.decode(objects as ByteArray, Base64.DEFAULT)
+                val newobjects = Base64.decode(objects, Base64.DEFAULT)
 
                 val bitmap = BitmapFactory.decodeByteArray(newobjects, 0, newobjects.size) // TODO decode stream
 
@@ -281,10 +282,24 @@ class WebView2Fragment : Fragment() {
             }
         })
 
+        mJsAsyncBridge.addDataListener(object :JsAsyncBridge.DataListener {
+            override fun getKey(): String {
+                return "text"
+            }
+
+            override fun onReceive(objects: Any) {
+                val str = objects as String
+                Log.e("chromium", "mJsAsyncBridge#HTTP#String: " + str.length)
+                mJsAsyncBridge.addDataListener(this)
+            }
+        })
+
         initUrl()
 
         return view
     }
+
+
 
     fun saveBitmap(bitmap: Bitmap) {
         val now = Date()
@@ -427,6 +442,39 @@ class MyWebViewClient(val webView: MyWebView) : android.webkit.WebViewClient() {
 
     override fun onPageStarted(view: android.webkit.WebView?, url: String?, favicon: Bitmap?) {
         webView.onPageStarted(view, url, favicon)
+    }
+
+    override fun onPageFinished(view: WebView?, url: String?) {
+        super.onPageFinished(view, url)
+
+        initPort()
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    fun initPort() {
+        val channelports = webView.createWebMessageChannel()
+        Log.e("chromium", "setWebMessageCallback#channelports: " + channelports.size)
+        val port = channelports[0]
+        port.setWebMessageCallback(object : WebMessagePort.WebMessageCallback() {
+            override fun onMessage(port: WebMessagePort?, message: WebMessage?) {
+                val str = message!!.data as String
+                Log.e("chromium", "setWebMessageCallback#String: " + str.length)
+
+                port!!.postMessage(WebMessage("success"))
+
+//                 val newobjects = Base64.decode(message!!.data, Base64.DEFAULT)
+//
+//                 val bitmap = BitmapFactory.decodeByteArray(newobjects, 0, newobjects.size) // TODO decode stream
+//
+//                 val imageView = ImageView(activity)
+//                 imageView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+//                 imageView.setImageBitmap(bitmap)
+//                 val dialog = android.app.AlertDialog.Builder(activity).setView(imageView)
+//                 dialog.show()
+            }
+        })
+
+        webView.postWebMessage(WebMessage("", arrayOf(channelports[1])), Uri.EMPTY)
     }
 
     override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {

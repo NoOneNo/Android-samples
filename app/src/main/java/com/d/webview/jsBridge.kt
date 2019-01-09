@@ -1,15 +1,18 @@
 package com.d.webview
 
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.support.annotation.RequiresApi
 import android.util.Log
 import android.webkit.JavascriptInterface
-import java.io.BufferedOutputStream
 import java.io.DataInputStream
 import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.Socket
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -53,6 +56,33 @@ class JsAsyncBridgeImpl: JsAsyncBridge {
     @JavascriptInterface
     fun getServerUrl():String {
         return mKlServer!!.getServerUrl()
+    }
+
+    @JavascriptInterface
+    fun putString(key:String, str:String) {
+        Log.e("chromium", "JsAsyncBridge#JNI#String: " + str.length)
+
+//        var data = str.toByteArray(Charsets.UTF_8)
+//        Log.e("chromium", "JsAsyncBridge#JNI#data: " + data.size)
+//        data = str.toByteArray(Charsets.UTF_16)
+//        Log.e("chromium", "JsAsyncBridge#JNI#data: " + data.size)
+        // var data = str.toByteArray(Charsets.ISO_8859_1)
+        // Log.e("chromium", "JsAsyncBridge#JNI#data: " + data.size)
+        // val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
+        // Log.e("chromium", "BitmapFactory#decodeStream")
+    }
+
+    @JavascriptInterface
+    fun putStrings(key:String, str:Array<String>) {
+        Log.e("chromium", "JsAsyncBridge#JNI#String: " + str[0] + str[1])
+    }
+
+    @JavascriptInterface
+    fun putBytes(key:String, data:ByteArray) {
+        Log.e("chromium", "JsAsyncBridge#JNI#data: " + data.size)
+
+        // val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
+        Log.e("chromium", "BitmapFactory#decodeStream")
     }
 
     @JavascriptInterface
@@ -113,6 +143,7 @@ open class KlServer : Runnable{
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     private fun performRequest(socket: Socket) {
         Log.e("chromium", "receive request")
         val inputStream = socket.getInputStream() // mark/reset not support SocketInputStream
@@ -124,10 +155,10 @@ open class KlServer : Runnable{
         val httpMethod = tokenizer.nextToken().toUpperCase() // "GET" or "POST"
         val path = tokenizer.nextToken()
 
-        if(!path.startsWith("/$mToken")) {
-            Log.e("chromium", "request invalid path: $path")
-            return
-        }
+//        if(!path.startsWith("/$mToken")) {
+//            Log.e("chromium", "request invalid path: $path")
+//            return
+//        }
 
         val headers = HashMap<String, String>()
         var header = reader.readLine()
@@ -139,25 +170,49 @@ open class KlServer : Runnable{
             header = reader.readLine()
         }
 
+        // "Content-Type" -> "multipart/form-data; boundary=----WebKitFormBoundaryPyckTvpTsznKXRHe"
         val contentLength = Integer.parseInt(headers["Content-Length"])
         Log.e("chromium", "request contentLength: $contentLength")
 
         var body: Any? = null
+
+        body = ByteArray(contentLength)
+        reader.readFully(body)
+        Log.e("chromium", "read byte fully")
+
         val contentType = headers["Content-Type"]
         if (contentType != null) {
             if (contentType.startsWith("image")) { // TODO image type not support
-                val bitmap = BitmapFactory.decodeStream(reader)
-                body = bitmap
+
+                // body = BitmapFactory.decodeByteArray(body, 0, body.size)
+                // Log.e("chromium", "BitmapFactory#decodeStream")
+
             } else if (contentType.startsWith("text")) { // TODO char length
-                val bodyBuilder = StringBuilder()
-                for (i in 0 until contentLength) {
-                    bodyBuilder.append(reader.read().toChar()) // notice: POST reader.readLine will block
-                }
-                body = bodyBuilder.toString().toByteArray()
+
+//                val bodyBuilder = StringBuilder()
+//                for (i in 0 until contentLength) {
+//                    bodyBuilder.append(aa[i].toChar()) // notice: POST reader.readLine will block
+//                }
+
+                // body = String(body)
+                // Log.e("chromium", "body0:" + body.subSequence(body.length-10, body.length))
+
+//                body = String(aa, Charsets.UTF_8)
+//                Log.e("chromium", "body1:" + (body as String).subSequence(body.length-30, body.length))
+//                body = String(aa, Charsets.US_ASCII)
+//                Log.e("chromium", "body2:" + (body as String).subSequence(body.length-30, body.length))
+//                body = String(aa, Charsets.ISO_8859_1)
+//                Log.e("chromium", "body3:" + (body as String).subSequence(body.length-30, body.length))
+
+//                val sc = Scanner(reader).useDelimiter("\\A")
+//                body = sc.next()
+
+//                val bodyBuilder = StringBuilder()
+//                for (i in 0 until contentLength) {
+//                    bodyBuilder.append(reader.read().toChar()) // notice: POST reader.readLine will block
+//                }
+//                body = bodyBuilder.toString()
             }
-        } else {
-            body = ByteArray(contentLength)
-            reader.read(body)
         }
 
         val request = KlRequest(requestLine, headers, body!!)
@@ -166,19 +221,14 @@ open class KlServer : Runnable{
 
         val outputStream = socket.getOutputStream()
         val writer = PrintWriter(outputStream)
-        val bufferedOutputStream = BufferedOutputStream(outputStream)
 
         writer.println("HTTP/1.1 200 OK")
         writer.println("Server: APP HTTP Server")
         writer.println()
+        writer.println("success")
         writer.flush()
 
-        bufferedOutputStream.write(response.body)
-        bufferedOutputStream.flush()
-
-        writer.close()
-        bufferedOutputStream.close() // TODO safe close
-        socket.close()
+        socket.close() // TODO safe close
 
         Log.e("chromium", "send response")
     }
