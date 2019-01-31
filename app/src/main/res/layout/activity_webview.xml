@@ -32,51 +32,62 @@
 
 
             <ImageButton
-                android:id="@+id/web_close"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@android:color/transparent"
-                android:padding="10dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_close_black_24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                    android:id="@+id/menu"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@android:color/transparent"
+                    android:padding="10dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_menu_black_24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
-            <ImageButton
-                android:id="@+id/web_forward"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@android:color/transparent"
-                android:padding="10dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_arrow_forward_black_24dp"
-                app:layout_constraintEnd_toStartOf="@+id/web_close"
-                app:layout_constraintTop_toTopOf="parent"/>
+            <!--<ImageButton-->
+                <!--android:id="@+id/web_close"-->
+                <!--android:layout_width="50dp"-->
+                <!--android:layout_height="50dp"-->
+                <!--android:background="@android:color/transparent"-->
+                <!--android:padding="10dp"-->
+                <!--android:scaleType="centerInside"-->
+                <!--android:src="@drawable/ic_close_black_24dp"-->
+                <!--app:layout_constraintEnd_toEndOf="parent"-->
+                <!--app:layout_constraintTop_toTopOf="parent"/>-->
 
-            <ImageButton
-                android:id="@+id/web_back"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@android:color/transparent"
-                android:padding="10dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_arrow_back_black_24dp"
-                app:layout_constraintEnd_toStartOf="@+id/web_forward"
-                app:layout_constraintTop_toTopOf="parent"/>
+            <!--<ImageButton-->
+                <!--android:id="@+id/web_forward"-->
+                <!--android:layout_width="50dp"-->
+                <!--android:layout_height="50dp"-->
+                <!--android:background="@android:color/transparent"-->
+                <!--android:padding="10dp"-->
+                <!--android:scaleType="centerInside"-->
+                <!--android:src="@drawable/ic_arrow_forward_black_24dp"-->
+                <!--app:layout_constraintEnd_toStartOf="@+id/web_close"-->
+                <!--app:layout_constraintTop_toTopOf="parent"/>-->
+
+            <!--<ImageButton-->
+                <!--android:id="@+id/web_back"-->
+                <!--android:layout_width="50dp"-->
+                <!--android:layout_height="50dp"-->
+                <!--android:background="@android:color/transparent"-->
+                <!--android:padding="10dp"-->
+                <!--android:scaleType="centerInside"-->
+                <!--android:src="@drawable/ic_back"-->
+                <!--app:layout_constraintEnd_toStartOf="@+id/web_forward"-->
+                <!--app:layout_constraintTop_toTopOf="parent"/>-->
 
 
             <EditText
-                android:id="@+id/web_url_et"
-                android:layout_width="300dp"
-                android:layout_height="50dp"
-                android:background="@android:color/transparent"
-                android:imeActionLabel="Go"
-                android:imeOptions="actionGo"
-                android:paddingStart="16dp"
-                android:selectAllOnFocus="true"
-                android:singleLine="true"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                    android:id="@+id/web_url_et"
+                    android:layout_width="333dp"
+                    android:layout_height="50dp"
+                    android:background="@android:color/transparent"
+                    android:imeActionLabel="Go"
+                    android:imeOptions="actionGo"
+                    android:paddingStart="16dp"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
         </android.support.constraint.ConstraintLayout>
 

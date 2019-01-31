@@ -60,7 +60,7 @@ class MyViewModel : ViewModel() {
 }
 
 fun testVM() {
-    val vm = ViewModelProviders.of(Fragment()).get(MyViewModel::class.java)
+//    val vm = ViewModelProviders.of(Fragment()).get(MyViewModel::class.java)
 }
 
 // 疑问1. VM是怎么区分是Activity的旋转导致的onDestroy还是finish导致的onDestroy?

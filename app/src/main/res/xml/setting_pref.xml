@@ -41,5 +41,9 @@
                 android:key="resize"
                 android:title="resize"/>
 
+        <Preference
+                android:key="text"
+                android:title="text"/>
+
     </PreferenceCategory>
 </PreferenceScreen>

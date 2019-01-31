@@ -3,26 +3,22 @@ package com.d.ui.resize
 import android.annotation.TargetApi
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
-import android.support.v4.view.ViewPager
 import android.support.v7.widget.AppCompatEditText
 import android.util.DisplayMetrics
 import android.view.*
+import android.widget.ImageView
 import com.d.R
 import kotlinx.android.synthetic.main.resize_layout.*
-import com.google.common.io.Flushables.flush
-import android.graphics.Bitmap
-import android.os.Environment.getExternalStorageDirectory
-import android.content.Intent
-import android.net.Uri
-import android.os.Environment
-import android.widget.ImageView
 import java.io.File
-import java.io.FileOutputStream
 import java.util.*
 
 
@@ -101,7 +97,9 @@ class ResizeFragment : Fragment() {
                 // visibleRect previous - now
 
                 val keyboardHeight = contentRoot.paddingBottom
-                contentRoot.setPadding(contentRoot.paddingLeft, contentRoot.paddingTop, contentRoot.paddingRight, contentRoot.paddingBottom)
+
+
+                contentRoot.setPadding(contentRoot.paddingLeft, contentRoot.paddingTop, contentRoot.paddingRight, keyboardHeight4)
 
             }
         })
@@ -132,6 +130,9 @@ class ResizeFragment : Fragment() {
 //                decorView.systemUiVisibility = decorView.systemUiVisibility and flag.inv()
 //            }
 //        }
+
+        val flag = WindowManager.LayoutParams.FLAG_FULLSCREEN
+        activity!!.window.addFlags(flag)
 
         full_screen.setOnClickListener {
             val flag = WindowManager.LayoutParams.FLAG_FULLSCREEN
@@ -227,7 +228,7 @@ class ResizeFragment : Fragment() {
 
         val decorView = dialog.window.decorView
         decorView.setPadding(0, 0, 0, 0)
-        decorView.setBackgroundColor(resources.getColor(R.color.black))
+        decorView.setBackgroundColor(resources.getColor(android.R.color.black))
 
         decorView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             @RequiresApi(Build.VERSION_CODES.M)

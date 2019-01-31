@@ -3,12 +3,9 @@ package com.d.webview
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Paint
 import android.net.Uri
 import android.net.http.SslError
 import android.os.Build
@@ -24,13 +21,10 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.webkit.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.d.R
 import kotlinx.android.synthetic.main.activity_webview.*
 import kotlinx.android.synthetic.main.web_browser_layout.*
@@ -46,6 +40,7 @@ class WebViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_webview)
+        setSupportActionBar(null)
 
         var fragment = supportFragmentManager.findFragmentById(R.id.content_container)
         if (fragment == null) {
@@ -54,113 +49,17 @@ class WebViewActivity : AppCompatActivity() {
         }
         mWebView2Fragment = fragment as WebView2Fragment
 
-
-        web_close.setOnClickListener {
-            finish()
-        }
-
-        web_back.setOnClickListener{
-            mWebView2Fragment?.back()
-        }
-
-        web_forward.setOnClickListener{
-            mWebView2Fragment?.forword()
-        }
-
+        web_url_et.paintFlags =  0
         web_url_et.setOnEditorActionListener { v, actionId, event ->
             mWebView2Fragment?.loadurl(web_url_et.text.toString())
             return@setOnEditorActionListener true
         }
 
-        web_url_et.paintFlags =  0
+        menu.setOnClickListener {
 
-        setSupportActionBar(null)
-    }
-
-    private fun takeScreenshot(view: View) {
-        val now = Date()
-        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now)
-
-        try {
-            // image naming and path  to include sd card  appending name you choose for file
-            val mPath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg"
-
-            Log.e("debug", "start")
-
-            // create bitmap screen capture
-            val v1 = view
-            v1.setDrawingCacheEnabled(true)
-            val bitmap = Bitmap.createBitmap(v1.getDrawingCache())
-            v1.setDrawingCacheEnabled(false)
-
-            Log.e("debug", "createBitmap")
-
-            val imageFile = File(mPath)
-
-
-            val outputStream = FileOutputStream(imageFile)
-            val quality = 100
-            bitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream)
-            outputStream.flush()
-            outputStream.close()
-
-            Log.e("debug", "compress PNG to outputStream")
-
-//            openScreenshot(imageFile)
-
-
-//            val imageView = ImageView(this)
-//            imageView.setImageBitmap(bitmap)
-
-//            val dialog = android.app.AlertDialog.Builder(this).setView(imageView).setOnDismissListener {
-//
-//            }.create()
-//            dialog.show()
-
-
-        } catch (e: Throwable) {
-            // Several error may come out with file handling or DOM
-            e.printStackTrace()
         }
-    }
-
-    fun saveBitmap(bitmap: Bitmap) {
-        val now = Date()
-        android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now)
-
-        try {
-            // image naming and path  to include sd card  appending name you choose for file
-            val mPath = Environment.getExternalStorageDirectory().toString() + "/" + now + ".jpg"
-
-            val imageFile = File(mPath)
 
 
-            val outputStream = FileOutputStream(imageFile)
-            val quality = 100
-            bitmap.compress(Bitmap.CompressFormat.PNG, quality, outputStream)
-            outputStream.flush()
-            outputStream.close()
-
-            Log.e("debug", "compress PNG to outputStream")
-
-        } catch (e: Throwable) {
-            // Several error may come out with file handling or DOM
-            e.printStackTrace()
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    fun asyncTest(webView: MyWebView) {
-        val jss1 = "var s = \"hello\";"
-        val jss = "for(i in [1,2,3,4,5,6,7,8,9]) {console.log(s + i)};"
-//        val jss = "new Worker(window.URL.createObjectURL(new Blob([\"onmessage = function(s) {for(i in [1,2,3,4,5,6,7,8,9]) {console.log(s + i)};}\"], { type: 'text/javascript' }))).postMessage(s);"
-
-        webView.evaluateJavascript(jss1, null)
-
-
-        for (i in arrayOf(1,2,3,4,5)) {
-            webView.evaluateJavascript(jss, null)
-        }
     }
 
     fun setUrl(url:String?) {
@@ -185,8 +84,20 @@ class WebViewActivity : AppCompatActivity() {
             return
         }
         super.onBackPressed()
-
     }
+
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    fun asyncTest(webView: MyWebView) {
+        val jss1 = "var s = \"hello\";"
+        val jss = "for(i in [1,2,3,4,5,6,7,8,9]) {console.log(s + i)};"
+        // val jss = "new Worker(window.URL.createObjectURL(new Blob([\"onmessage = function(s) {for(i in [1,2,3,4,5,6,7,8,9]) {console.log(s + i)};}\"], { type: 'text/javascript' }))).postMessage(s);"
+        webView.evaluateJavascript(jss1, null)
+        for (i in arrayOf(1,2,3,4,5)) {
+            webView.evaluateJavascript(jss, null)
+        }
+    }
+
 }
 
 class WebView2Fragment : Fragment() {
@@ -261,6 +172,30 @@ class WebView2Fragment : Fragment() {
         mJsAsyncBridge.addDataListener(object :JsAsyncBridge.DataListener {
             override fun getKey(): String {
                 return "base64image"
+            }
+
+            override fun onReceive(objects: Any) {
+                val s = objects as String
+                Log.e("debug", "start: " + s.subSequence(0, 30))
+                Log.e("debug", "end: " + s.subSequence(s.length - 30, s.length))
+
+                val newobjects = Base64.decode(objects, Base64.DEFAULT)
+
+                val bitmap = BitmapFactory.decodeByteArray(newobjects, 0, newobjects.size) // TODO decode stream
+
+                val imageView = ImageView(activity)
+                imageView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+                imageView.setImageBitmap(bitmap)
+                val dialog = android.app.AlertDialog.Builder(activity).setView(imageView)
+                dialog.show()
+
+                mJsAsyncBridge.addDataListener(this)
+            }
+        })
+
+        mJsAsyncBridge.addDataListener(object :JsAsyncBridge.DataListener {
+            override fun getKey(): String {
+                return "textImage"
             }
 
             override fun onReceive(objects: Any) {

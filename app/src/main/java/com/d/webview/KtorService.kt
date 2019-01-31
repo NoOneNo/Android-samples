@@ -6,22 +6,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import io.ktor.application.call
-import io.ktor.http.ContentType
-import io.ktor.request.receiveText
-import io.ktor.response.respondText
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.routing
-import io.ktor.server.engine.embeddedServer
-import io.ktor.server.netty.Netty
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.PrintWriter
-import java.net.ServerSocket
-import java.net.Socket
-import java.util.*
-import kotlin.collections.HashMap
 
 
 class KtorService : Service() {
@@ -37,19 +21,6 @@ class KtorService : Service() {
         KlServer().start()
 
         super.onCreate()
-    }
-
-    fun ktor() {
-        embeddedServer(Netty, HTTP_PORT) {
-            routing {
-                post("/") {
-                    val text: String = call.receiveText()
-                    Log.e("chromium", "text size: " + utf8Length(text))
-                    call.respondText(text, ContentType.Text.Html)
-                }
-            }
-            //}.start(wait = true)
-        }.start(wait = false)
     }
 
     @TargetApi(Build.VERSION_CODES.N)

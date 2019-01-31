@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.preference.PreferenceFragmentCompat
+import com.d.ui.layout.TextFragment
 import com.d.ui.progress.EditTextFragment
 import com.d.ui.progress.ProgressFragment
 import com.d.ui.resize.ResizeFragment
@@ -47,6 +48,11 @@ class SettingFragment : PreferenceFragmentCompat() {
 
         findPreference("resize").setOnPreferenceClickListener {
             activity!!.supportFragmentManager.beginTransaction().replace(android.R.id.content, ResizeFragment()).addToBackStack(null).commit()
+            return@setOnPreferenceClickListener true
+        }
+
+        findPreference("text").setOnPreferenceClickListener {
+            activity!!.supportFragmentManager.beginTransaction().replace(android.R.id.content, TextFragment()).addToBackStack(null).commit()
             return@setOnPreferenceClickListener true
         }
 

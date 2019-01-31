@@ -61,15 +61,6 @@ class JsAsyncBridgeImpl: JsAsyncBridge {
     @JavascriptInterface
     fun putString(key:String, str:String) {
         Log.e("chromium", "JsAsyncBridge#JNI#String: " + str.length)
-
-//        var data = str.toByteArray(Charsets.UTF_8)
-//        Log.e("chromium", "JsAsyncBridge#JNI#data: " + data.size)
-//        data = str.toByteArray(Charsets.UTF_16)
-//        Log.e("chromium", "JsAsyncBridge#JNI#data: " + data.size)
-        // var data = str.toByteArray(Charsets.ISO_8859_1)
-        // Log.e("chromium", "JsAsyncBridge#JNI#data: " + data.size)
-        // val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
-        // Log.e("chromium", "BitmapFactory#decodeStream")
     }
 
     @JavascriptInterface
@@ -136,6 +127,7 @@ open class KlServer : Runnable{
         return mToken
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun run() {
         while (true) {
             val socket = serverSocket.accept()
@@ -155,10 +147,10 @@ open class KlServer : Runnable{
         val httpMethod = tokenizer.nextToken().toUpperCase() // "GET" or "POST"
         val path = tokenizer.nextToken()
 
-//        if(!path.startsWith("/$mToken")) {
-//            Log.e("chromium", "request invalid path: $path")
-//            return
-//        }
+        if(!path.startsWith("/$mToken")) {
+            Log.e("chromium", "request invalid path: $path")
+            return
+        }
 
         val headers = HashMap<String, String>()
         var header = reader.readLine()
@@ -182,36 +174,12 @@ open class KlServer : Runnable{
 
         val contentType = headers["Content-Type"]
         if (contentType != null) {
-            if (contentType.startsWith("image")) { // TODO image type not support
-
-                // body = BitmapFactory.decodeByteArray(body, 0, body.size)
-                // Log.e("chromium", "BitmapFactory#decodeStream")
-
-            } else if (contentType.startsWith("text")) { // TODO char length
-
-//                val bodyBuilder = StringBuilder()
-//                for (i in 0 until contentLength) {
-//                    bodyBuilder.append(aa[i].toChar()) // notice: POST reader.readLine will block
-//                }
-
-                // body = String(body)
-                // Log.e("chromium", "body0:" + body.subSequence(body.length-10, body.length))
-
-//                body = String(aa, Charsets.UTF_8)
-//                Log.e("chromium", "body1:" + (body as String).subSequence(body.length-30, body.length))
-//                body = String(aa, Charsets.US_ASCII)
-//                Log.e("chromium", "body2:" + (body as String).subSequence(body.length-30, body.length))
-//                body = String(aa, Charsets.ISO_8859_1)
-//                Log.e("chromium", "body3:" + (body as String).subSequence(body.length-30, body.length))
-
-//                val sc = Scanner(reader).useDelimiter("\\A")
-//                body = sc.next()
-
-//                val bodyBuilder = StringBuilder()
-//                for (i in 0 until contentLength) {
-//                    bodyBuilder.append(reader.read().toChar()) // notice: POST reader.readLine will block
-//                }
-//                body = bodyBuilder.toString()
+            if (contentType.startsWith("image")) {
+                 body = BitmapFactory.decodeByteArray(body, 0, body.size)
+                 Log.e("chromium", "BitmapFactory#decodeStream")
+            } else if (contentType.startsWith("text")) {
+                 body = String(body)
+                 Log.e("chromium", "body0:" + body.subSequence(body.length-10, body.length))
             }
         }
 
