@@ -1,4 +1,4 @@
-package com.d
+package com.d.css
 
 import com.d.alg.Document
 import org.json.JSONObject
@@ -35,62 +35,16 @@ class ExampleUnitTest {
 
     @Test
     fun css() {
-////        val document = Document()
-//        val document = RenderActionNode("body")
-//        document.styleSheet = StyleSheet.parse(JSONObject(simple1));
-//
-//        // 定义样式节点
-////        document.addStyleSheet(simple1)
-//
-//        // 节点绑定
-//        val node = RenderActionNode("div")
-////        document.appendChild(node)
-//        node.setParent(document);
-//
-//        assertEquals(node.finalStyleProps.size, 1)
-//        assertEquals(node.finalStyleProps["ca1"], "ca1-tag-1")
-//
-//        // 设置class
-//        node.setClass(" class-test1 ")
-//
-//        assertEquals(node.finalStyleProps.size, 1)
-//        assertEquals(node.finalStyleProps["ca1"], "ca1-class-1")
-//
-//        // 设置class
-//        node.setClass("class-test2 class-test1")
-//
-//        assertEquals(node.finalStyleProps.size, 1)
-//        assertEquals(node.finalStyleProps["ca1"], "ca1-class-2")
-//
-//        // 设置id
-//        node.setId("idTest1")
-//
-//        assertEquals(node.finalStyleProps.size, 1)
-//        assertEquals(node.finalStyleProps["ca1"], "ca1-id-1")
-//
-//        // 设置id
-//        node.setId("")
-//
-//        assertEquals(node.finalStyleProps.size, 1)
-//        assertEquals(node.finalStyleProps["ca1"], "ca1-class-2")
-//
-//        // 设置class
-//        node.setClass("class-test2")
-//
-//        assertEquals(node.finalStyleProps.size, 1)
-//        assertEquals(node.finalStyleProps["ca1"], "ca1-class-2")
-//
-//        // 设置class
-//        node.setClass("class-test2 class-test1")
-//
-//        assertEquals(node.finalStyleProps.size, 1)
-//        assertEquals(node.finalStyleProps["ca1"], "ca1-class-2")
-//
-//        // 设置class
-//        node.setClass("")
-//
-//        assertEquals(node.finalStyleProps.size, 1)
-//        assertEquals(node.finalStyleProps["ca1"], "ca1-tag-1")
+        val document = RenderActionNode("body")
+        document.setStyleSheet(1, CSSStyleSheet.build(JSONObject(simple1)))
+
+        // 节点绑定
+        val node = RenderActionNode("div")
+        node.parent = document
+
+        val dec = node.computeFinalStyleProps()
+        assertEquals(dec.length, 1)
+        assertEquals(dec.getPropertyCSSValue("ca1").value, "ca1-tag-1")
     }
 
     var desc1 = """{

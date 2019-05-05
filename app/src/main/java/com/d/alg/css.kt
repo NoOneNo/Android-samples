@@ -1,6 +1,7 @@
 package com.d.alg
 
 import org.json.JSONObject
+import java.util.*
 
 // dom树构建
 // 选择器解析
@@ -316,6 +317,7 @@ open class Node(var type:String) {
         while (cParent != null) {
             if (cParent.styleSheet != null) {
                 styleSheets.add(cParent.styleSheet!!)
+                break
             }
             cParent = cParent.parent
         }

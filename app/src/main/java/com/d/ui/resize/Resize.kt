@@ -5,15 +5,19 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Message
 import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.support.v7.widget.AppCompatEditText
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.*
 import android.widget.ImageView
 import com.d.R
@@ -27,6 +31,27 @@ class ResizeFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.resize_layout, null)
+    }
+
+    private var fs = false;
+    private var top = 0;
+    private var bottom = 0;
+
+    var dialog:AlertDialog? = null;
+
+    override fun onResume() {
+        super.onResume()
+
+        val b = dialog!!.getButton(AlertDialog.BUTTON_POSITIVE)
+        b.setOnClickListener {
+            if (!fs) {
+                fullscreen();
+                fs = true;
+            } else{
+                exfullscreen();
+                fs = false;
+            }
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -52,6 +77,22 @@ class ResizeFragment : Fragment() {
 //            }
 //        })
 
+        val visibleRect = Rect()
+        decorView.getWindowVisibleDisplayFrame(visibleRect)
+        scroller.setPadding(0, 0, 0, 0);
+        top = visibleRect.top;
+        bottom = visibleRect.bottom;
+
+        dialog = AlertDialog.Builder(activity).setOnDismissListener {
+              Log.i("de", "")
+        }.create();
+
+        dialog!!.setButton(AlertDialog.BUTTON_POSITIVE, "OK", null as Message?)
+
+        dialog!!.show();
+        dialog!!.window.decorView.setPadding(0, 0,0 ,0);
+        dialog!!.window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        dialog!!.getWindow().setBackgroundDrawable(null);
 
         decorView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
 
@@ -79,6 +120,8 @@ class ResizeFragment : Fragment() {
                 val visibleRect = Rect()
                 decorView.getWindowVisibleDisplayFrame(visibleRect)
 
+
+
                 val visibleHeight = visibleRect.bottom - visibleRect.top
                 val keyboardHeight0 = contentRootHeight - visibleHeight
 
@@ -99,7 +142,7 @@ class ResizeFragment : Fragment() {
                 val keyboardHeight = contentRoot.paddingBottom
 
 
-                contentRoot.setPadding(contentRoot.paddingLeft, contentRoot.paddingTop, contentRoot.paddingRight, keyboardHeight4)
+                // contentRoot.setPadding(contentRoot.paddingLeft, contentRoot.paddingTop, contentRoot.paddingRight, keyboardHeight4)
 
             }
         })
@@ -131,16 +174,25 @@ class ResizeFragment : Fragment() {
 //            }
 //        }
 
-        val flag = WindowManager.LayoutParams.FLAG_FULLSCREEN
-        activity!!.window.addFlags(flag)
+//        val flag = WindowManager.LayoutParams.FLAG_FULLSCREEN
+//        activity!!.window.addFlags(flag)
 
         full_screen.setOnClickListener {
-            val flag = WindowManager.LayoutParams.FLAG_FULLSCREEN
-            if (activity!!.window.attributes.flags and flag == 0) {
-                activity!!.window.addFlags(flag)
-            } else {
-                activity!!.window.clearFlags(flag)
+//            val flag = WindowManager.LayoutParams.FLAG_FULLSCREEN
+//            if (activity!!.window.attributes.flags and flag == 0) {
+//                activity!!.window.addFlags(flag)
+//            } else {
+//                activity!!.window.clearFlags(flag)
+//            }
+
+            if (!fs) {
+                fullscreen();
+                fs = true;
+            } else{
+                exfullscreen();
+                fs = false;
             }
+
         }
 
         full_screen_nav.setOnClickListener {
@@ -166,6 +218,21 @@ class ResizeFragment : Fragment() {
         screen_shot.setOnClickListener{
             takeScreenshot(decorView)
         }
+    }
+
+        private fun fullscreen() {
+            activity!!.window.decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        }
+
+    private fun exfullscreen() {
+        activity!!.window.decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
     }
 
     private fun takeScreenshot(view: View) {
