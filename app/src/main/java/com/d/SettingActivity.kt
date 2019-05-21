@@ -17,6 +17,10 @@ class SettingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         supportFragmentManager.beginTransaction().add(android.R.id.content, SettingFragment(), "tag").commit()
+
+        val wl = window.attributes;
+        wl.alpha = 0.5f;
+        window.attributes = wl;
     }
 }
 
